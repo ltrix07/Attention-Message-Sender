@@ -1,4 +1,5 @@
 import sqlite3
+import os
 
 
 class DataBase:
@@ -12,16 +13,19 @@ class DataBase:
         self.close_connection()
 
     def _create_db(self):
+        if not os.path.isdir('./cech'):
+            os.mkdir('./cech')
+
         self.cursor.execute('''
-            CREATE TABLE IF NOT EXISTS sent_messages (
-                id INTEGER PRIMARY KEY AUTOINCREMENT,
-                message_id INTEGER,
-                chat_id INTEGER,
-                shop_name TEXT,
-                message_type TEXT,
-                order TEXT NULL
-                text TEXT
-            )
+        CREATE TABLE IF NOT EXISTS sent_messages (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            message_id INTEGER,
+            chat_id INTEGER,
+            shop_name TEXT,
+            message_type TEXT,
+            order_id TEXT NULL,
+            text TEXT
+        )
         ''')
         self.conn.commit()
 
@@ -32,7 +36,7 @@ class DataBase:
         try:
             self.cursor.execute(
                 '''
-                INSERT INTO sent_messages (message_id, chat_id, shop_name, message_type, order, text)
+                INSERT INTO sent_messages (message_id, chat_id, shop_name, message_type, order_id, text)
                 VALUES (?, ?, ?, ?, ?, ?)
                 ''',
                 (message.message_id, message.chat.id, shop_name, mes_type, order, message.text)
@@ -49,7 +53,7 @@ class DataBase:
             self.cursor.execute(
                 f'''
                 DELETE FROM sent_messages
-                WHERE {" = ? AND".join(keys)} = ?
+                WHERE {" = ? AND ".join(keys)} = ?
                 ''',
                 values
             )
@@ -65,7 +69,7 @@ class DataBase:
             self.cursor.execute(
                 f'''
                 SELECT 1 FROM sent_messages
-                WHERE {" = ? AND".join(keys)} = ?
+                WHERE {" = ? AND ".join(keys)} = ?
                 LIMIT 1
                 ''',
                 values
@@ -83,7 +87,7 @@ class DataBase:
             self.cursor.execute(
                 f'''
                 SELECT {desired_col} FROM sent_messages
-                WHERE {" = ? AND".join(keys)} = ?
+                WHERE {" = ? AND ".join(keys)} = ?
                 LIMIT 1
                 ''',
                 values

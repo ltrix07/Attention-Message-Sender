@@ -1,4 +1,5 @@
 import asyncio
+import time
 from google_sheets_utils.buid import GoogleSheets
 from attention_sender.collector import Collector
 from attention_sender.telegram_bot import dp, Bot
@@ -15,16 +16,18 @@ async def start_bot():
 async def sheet_look(
         inspector: Inspect, google: GoogleSheets, table_inf, worksheet, ch_problem, ch_attention, shop_name
 ):
+    print(f'Просмотр листа {worksheet}')
     table_id = table_inf.get('table_id')
     columns = table_inf.get('columns')
     d_from_sheet = google.get_all_info_from_sheet(table_id, worksheet)
     indices = google.get_columns_indices(d_from_sheet, columns)
     d_by_indices = await inspector.filter_data_by_indices(d_from_sheet, indices)
     await inspector.check_problems(d_by_indices, ch_problem, shop_name, worksheet)
-    await inspector.check_attentions()
+    await inspector.check_attentions(d_by_indices, ch_attention, shop_name, worksheet)
 
 
 async def look_table(g_creds_ph: str, chat_data: dict, shop_name: str, table_inf: dict, staff_ph: str):
+    print('Обработка листов таблицы')
     shop_name = shop_name.capitalize()
     collector = Collector()
     g_api = GoogleSheets(g_creds_ph)
@@ -40,29 +43,33 @@ async def look_table(g_creds_ph: str, chat_data: dict, shop_name: str, table_inf
     if await inspector.now_m_in_sheet(shop_name, chat_problems, sheets, now_m):
         await sheet_look(inspector, g_api, table_inf, now_m, chat_problems, chat_attention, shop_name)
     elif str(prev_m) in sheets:
-        await sheet_look(inspector, g_api, table_inf, prev_m, chat_problems, chat_attention)
+        await sheet_look(inspector, g_api, table_inf, prev_m, chat_problems, chat_attention, shop_name)
     elif f'azat_{now_m}' in sheets:
-        pass
+        await sheet_look(inspector, g_api, table_inf, f'azat_{now_m}', chat_problems, chat_attention, shop_name)
     elif f'azat_{prev_m}' in sheets:
-        pass
+        await sheet_look(inspector, g_api, table_inf, f'azat_{prev_m}', chat_problems, chat_attention, shop_name)
     elif f'bro_{now_m}' in sheets:
-        pass
+        await sheet_look(inspector, g_api, table_inf, f'bro_{now_m}', chat_problems, chat_attention, shop_name)
     elif f'bro_{prev_m}' in sheets:
-        pass
+        await sheet_look(inspector, g_api, table_inf, f'bro_{prev_m}', chat_problems, chat_attention, shop_name)
 
 
 async def process(
         staff_ph: str, spreadsheets_ph: str, chat_data_ph: str, google_creds_ph: str
 ):
+    print('Чтение файла с таблицами')
     spreadsheets = read_json(spreadsheets_ph)
     chat_data = read_json(chat_data_ph)
 
     while True:
+        start_t = time.time()
         for shop_name, table_info in spreadsheets.items():
             await look_table(
                 google_creds_ph, chat_data, shop_name, table_info, staff_ph
             )
             await asyncio.sleep(5)
+        end_t = time.time()
+        print(end_t - start_t)
 
 
 async def main(
@@ -72,6 +79,7 @@ async def main(
     task_look = asyncio.create_task(process(
         staff_ph, spreadsheets_ph, chat_data_ph, google_creds_ph
     ))
+    print('Запуск бота и программы')
     task_bot = asyncio.create_task(start_bot())
     await asyncio.gather(task_bot, task_look)
 

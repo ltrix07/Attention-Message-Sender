@@ -27,7 +27,7 @@ async def send_message_w_button(chat_id, message, button_text, shop_name, mes_ty
 
 
 async def send_message(chat_id, message, shop_name, mes_type, order):
-    if not db.check_values_in_columns(shop_name=shop_name, mes_type=mes_type, order=order):
+    if not db.check_values_in_columns(shop_name=shop_name, message_type=mes_type, order_id=order):
         mes = await bot.send_message(chat_id, message)
         db.sent_mes_save(mes, shop_name, order, mes_type)
 

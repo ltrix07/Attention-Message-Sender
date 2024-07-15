@@ -14,8 +14,8 @@ def write_json(file_path, data):
 def message_bad_price(order_id, prof_amount, prof_perc, shop_name, sheet_name):
     return (f'❗️Warning: Слишком большой минус.\n\n'
             f'Amazon order: {order_id}\n'
-            f'Profit ($): {prof_amount}\n'
-            f'Profit (%): {prof_perc}\n'
+            f'Profit ($): {prof_amount}$\n'
+            f'Profit (%): {prof_perc}%\n'
             f'Shop: "{shop_name}"\n'
             f'Sheet name: "{sheet_name}"')
 

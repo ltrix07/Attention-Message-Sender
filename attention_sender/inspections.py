@@ -39,8 +39,8 @@ class Inspect:
             if prof <= -7:
                 message = message_bad_price(order, prof_amount, prof, shop, sheet)
                 await send_message(chat_id, message, shop, 'bad_price', order)
-            elif prof > -7 and db.check_values_in_columns(shop_name=shop, message_type='bad_price', order=order):
-                mess_id = db.get_item('message_id', shop_name=shop, message_type='bad_price', order=order)
+            elif prof > -7 and db.check_values_in_columns(shop_name=shop, message_type='bad_price', order_id=order):
+                mess_id = db.get_item('message_id', shop_name=shop, message_type='bad_price', order_id=order)
                 await delete_message(chat_id, mess_id)
 
     async def check_attentions(self, data: dict, chat_id: int, shop: str, sheet: str):
@@ -51,7 +51,7 @@ class Inspect:
 
     async def attention_handler(self, status_point: str, data: dict, worker_type: str, shop: str, sheet: str, chat: int):
         workers = ", ".join(self.staff.get(worker_type))
-        for i, status in data.get('status1'):
+        for i, status in enumerate(data.get('status1')):
             order = data.get('order_num')[i]
             date = data.get('purchase_date')[i]
 
@@ -60,7 +60,7 @@ class Inspect:
                     workers, date, status, order, shop, sheet, worker_type
                 )
                 await send_message(chat, message, shop, status_point, order)
-            elif db.check_values_in_columns(message_type=status_point, order=order) and status != status_point:
-                mess_id = db.get_item('message_id', message_type=status_point, order=order)
+            elif db.check_values_in_columns(message_type=status_point, order_id=order) and status != status_point:
+                mess_id = db.get_item('message_id', message_type=status_point, order_id=order)
                 await delete_message(chat, mess_id)
 
