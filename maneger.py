@@ -2,12 +2,14 @@ from attention_sender.utils import read_json, write_json
 
 
 def add_shop():
+    g_creds = read_json('./creds/google_creds.json')
     all_data = read_json('./db/spreadsheets.json')
     shop_name = input('Enter shop name: ').lower().strip()
     for shop in all_data.keys():
         if shop_name == shop:
             return 'Shop already in database'
 
+    print(f'Give allow for this email - {g_creds.get("client_email")}')
     shop_data = {
         "table_id": input('Enter table id: '),
         "columns": {
