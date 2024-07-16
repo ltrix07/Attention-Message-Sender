@@ -4,10 +4,10 @@ import os
 
 class DataBase:
     def __init__(self, db_ph):
+        self._create_db()
         self.db_ph = db_ph
         self.conn = sqlite3.connect(self.db_ph)
         self.cursor = self.conn.cursor()
-        self._create_db()
 
     def __del__(self):
         self.close_connection()
