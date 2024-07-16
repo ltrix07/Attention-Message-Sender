@@ -4,18 +4,21 @@ import os
 
 class DataBase:
     def __init__(self, db_ph):
-        self._create_db()
+        self._check_dir()
         self.db_ph = db_ph
         self.conn = sqlite3.connect(self.db_ph)
         self.cursor = self.conn.cursor()
+        self._create_db()
 
     def __del__(self):
         self.close_connection()
 
-    def _create_db(self):
+    @staticmethod
+    def _check_dir():
         if not os.path.isdir('./cech'):
             os.mkdir('./cech')
 
+    def _create_db(self):
         self.cursor.execute('''
         CREATE TABLE IF NOT EXISTS sent_messages (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
