@@ -8,7 +8,7 @@ def read_json(file_path) -> dict:
 
 def write_json(file_path, data):
     with open(file_path, 'w') as f:
-        json.dump(data, f)
+        json.dump(data, f, indent=4)
 
 
 def message_bad_price(order_id, prof_amount, prof_perc, shop_name, sheet_name):
