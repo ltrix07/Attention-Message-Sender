@@ -13,10 +13,12 @@ def write_json(file_path: str, data: dict) -> None:
 
 
 def today_or_not(date: str, date_format: str = "%d.%m.%Y %H:%M:%S"):
-    date_obj = datetime.strptime(date, date_format)
+    try:
+        date_obj = datetime.strptime(date, date_format)
+    except ValueError:
+        return False
     today = datetime.now()
     is_today = date_obj.date() == today.date()
-    print(is_today, date, today)
     return is_today
 
 
@@ -50,10 +52,16 @@ def message_no_scraping_price(workers: str, shop: str):
             f'На магазине "{shop}" скрипт не тянет цены.')
 
 
+def message_no_collection_supp(workers: str, shop: str):
+    return (f'{workers}\n'
+            f'На магазине "{shop}" скрипт не тянет поставщиков.')
+
+
 def message_bad_price(
-        order_id: str, prof_amount: str, prof_perc: float, shop_name: str, sheet_name: str
+        workers: str, order_id: str, prof_amount: str, prof_perc: float, shop_name: str, sheet_name: str
 ) -> str:
-    return (f'❗️Warning: Слишком большой минус.\n\n'
+    return (f'{workers}\n'
+            f'❗️Warning: Слишком большой минус.\n\n'
             f'Amazon order: {order_id}\n'
             f'Profit ($): {prof_amount}$\n'
             f'Profit (%): {prof_perc}%\n'

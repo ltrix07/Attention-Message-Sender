@@ -1,3 +1,5 @@
+import aiogram.exceptions
+
 from attention_sender.utils import read_json
 from attention_sender.db import DataBase
 from aiogram import Bot, Dispatcher, types
@@ -37,5 +39,9 @@ async def send_message(
 
 
 async def delete_message(chat_id: int, message_id: int) -> None:
-    await bot.delete_message(chat_id, message_id)
+    try:
+        await bot.delete_message(chat_id, message_id)
+    except aiogram.exceptions.TelegramBadRequest as error:
+        if 'message to delete not found' in str(error):
+            pass
     db.delete_message(chat_id=chat_id, message_id=message_id)
