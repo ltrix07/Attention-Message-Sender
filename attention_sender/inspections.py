@@ -97,13 +97,11 @@ class Inspect:
             status_2 = data.get('status2')[i]
             in_db = db.check_values_in_columns(shop_name=shop, message_type='bad_price', order_id=order)
 
-            if prof <= -7 and status_1 == '' and not in_db:
+            if not in_db and prof <= -7 and status_1 == '' and status_2 == '':
                 await self._mes_sender_bp(order, prof_amount, prof, shop, sheet, chat_id)
             elif prof > -7 and in_db:
                 await self._mes_deleter(shop, order, chat_id, 'bad_price')
-            elif status_1 != '' and in_db:
-                await self._mes_deleter(shop, order, chat_id, 'bad_price')
-            elif status_2 != '' and in_db:
+            elif (status_1 != '' or status_2 != '') and in_db:
                 await self._mes_deleter(shop, order, chat_id, 'bad_price')
 
     async def update_fee_check(self, data: dict, chat_id: int, shop: str):
