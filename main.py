@@ -68,6 +68,7 @@ async def process(
     while True:
         start_t = time.time()
         for shop_name, table_info in spreadsheets.items():
+            print(f'Look - {shop_name}')
             await look_table(
                 google_creds_ph, chat_data, shop_name, table_info, staff_ph
             )
