@@ -18,7 +18,9 @@ async def callback_button_delete(callback_query: types.CallbackQuery):
     db.delete_message(chat_id=chat_id, message_id=message_id)
 
 
-async def send_message_w_button(chat_id, message, button_text, shop_name, mes_type, order):
+async def send_message_w_button(
+        chat_id: int, message: str, button_text: str, shop_name: str, mes_type: str, order: str | None
+) -> None:
     if not db.check_values_in_columns(shop_name=shop_name, message_type=mes_type):
         button = InlineKeyboardButton(text=button_text, callback_data='button_click_del')
         keyboard = InlineKeyboardMarkup(inline_keyboard=[[button]])
@@ -26,12 +28,14 @@ async def send_message_w_button(chat_id, message, button_text, shop_name, mes_ty
         db.sent_mes_save(mes, shop_name, order, mes_type)
 
 
-async def send_message(chat_id, message, shop_name, mes_type, order):
+async def send_message(
+        chat_id: int, message: str, shop_name: str, mes_type: str, order: str
+) -> None:
     if not db.check_values_in_columns(shop_name=shop_name, message_type=mes_type, order_id=order):
         mes = await bot.send_message(chat_id, message)
         db.sent_mes_save(mes, shop_name, order, mes_type)
 
 
-async def delete_message(chat_id, message_id):
+async def delete_message(chat_id: int, message_id: int) -> None:
     await bot.delete_message(chat_id, message_id)
     db.delete_message(chat_id=chat_id, message_id=message_id)
