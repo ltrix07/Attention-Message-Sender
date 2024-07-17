@@ -1,4 +1,5 @@
 import json
+from datetime import datetime
 
 
 def read_json(file_path: str) -> dict:
@@ -11,6 +12,14 @@ def write_json(file_path: str, data: dict) -> None:
         json.dump(data, f, indent=4)
 
 
+def today_or_not(date: str, date_format: str = "%d.%m.%Y %H:%M:%S"):
+    date_obj = datetime.strptime(date, date_format)
+    today = datetime.now()
+    is_today = date_obj.date() == today.date()
+    print(is_today, date, today)
+    return is_today
+
+
 def message_no_sheet(workers, shop):
     return (f'{workers}\n'
             f'В таблице "{shop}" нет листа с текущим месяцем.')
@@ -20,9 +29,25 @@ def message_forbidden(workers, shop):
     g_creds = read_json('./creds/google_creds.json')
     serv_email = g_creds.get('client_email')
     return (f'{workers}\n'
-            f'У бота нет доступа к таблице "{shop}"\n'
+            f'У бота нет доступа к таблице "{shop}".\n'
             f'Надо дать доступ для почты:\n\n'
             f'{serv_email}')
+
+
+def message_formula_check(workers: str, shop: str, sheet: str):
+    return (f'{workers}\n'
+            f'На магазине "{shop}" надо проверить формулы.\n'
+            f'Лист: "{sheet}"')
+
+
+def message_need_fee_update(workers: str, shop: str):
+    return (f'{workers}\n'
+            f'На магазине "{shop}" надо обновить fee.')
+
+
+def message_no_scraping_price(workers: str, shop: str):
+    return (f'{workers}\n'
+            f'На магазине "{shop}" скрипт не тянет цены.')
 
 
 def message_bad_price(

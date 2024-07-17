@@ -1,7 +1,9 @@
 from attention_sender.utils import read_json, message_bad_price, message_attention, message_no_sheet, \
-    message_forbidden
+    message_forbidden, message_formula_check, message_need_fee_update, today_or_not, message_no_scraping_price
 from attention_sender.telegram_bot import db, delete_message, send_message_w_button, send_message
 from attention_sender.errors import google_sheet_err_proc
+from typing import Callable
+from datetime import datetime
 
 
 class Inspect:
@@ -25,9 +27,27 @@ class Inspect:
         )
         await send_message(chat, message, shop, status_point, order)
 
+    async def _generate_and_send_bad_mess(
+            self, workers_list: list, chat_id: int, shop_name: str, mess_func: Callable,
+            btn_txt: str, mes_type: str, sheet: str | None = None
+    ):
+        workers_str = ""
+        for index, worker in enumerate(workers_list):
+            if index == len(workers_list) - 1:
+                workers_str += ", ".join(self.staff.get(worker))
+            else:
+                workers_str += ", ".join(self.staff.get(worker)) + ", "
+        if sheet:
+            message = mess_func(workers_str, shop_name, sheet)
+        else:
+            message = mess_func(workers_str, shop_name)
+        await send_message_w_button(
+            chat_id, message, btn_txt, shop_name, mes_type, None
+        )
+
     @staticmethod
-    async def _mes_deleter(shop: str, order: str, chat_id: int) -> None:
-        mess_id = db.get_item('message_id', shop_name=shop, message_type='bad_price', order_id=order)
+    async def _mes_deleter(shop: str, order: str, chat_id: int, mes_type: str) -> None:
+        mess_id = db.get_item('message_id', shop_name=shop, message_type=mes_type, order_id=order)
         await delete_message(chat_id, mess_id)
 
     async def now_m_in_sheet(
@@ -36,26 +56,18 @@ class Inspect:
         err_stat = await google_sheet_err_proc(sheets)
         print(err_stat)
         if not err_stat:
-            await self.no_access_to_table(chat_id, shop_name)
+            await self._generate_and_send_bad_mess(
+                ['analysts', 'developers', 'managers'],  chat_id, shop_name, message_forbidden,
+                'Дал доступ', 'no_access'
+            )
             return False
         elif str(now_month) not in sheets:
-            await self.no_sheet_in_table(chat_id, shop_name)
+            await self._generate_and_send_bad_mess(
+                ['analysts', 'developers'], chat_id, shop_name, message_no_sheet, 'Добавил лист',
+                'no_sheet'
+            )
             return False
         return True
-
-    async def no_access_to_table(self, chat_id: int, shop_name: str) -> None:
-        workers = f'{", ".join(self.staff.get('analysts'))}, {", ".join(self.staff.get('developers'))}, {", ".join(self.staff.get('managers'))}'
-        message = message_forbidden(workers, shop_name)
-        await send_message_w_button(
-            chat_id, message, 'Дал доступ', shop_name, 'no_access', None
-        )
-
-    async def no_sheet_in_table(self, chat_id: int, shop_name: str):
-        workers = f'{", ".join(self.staff.get('analysts'))}, {", ".join(self.staff.get('developers'))}'
-        message = message_no_sheet(workers, shop_name)
-        await send_message_w_button(
-            chat_id, message, 'Добавил лист', shop_name, 'no_sheet', None
-        )
 
     @staticmethod
     async def filter_data_by_indices(data: list, indices: dict) -> dict:
@@ -68,9 +80,17 @@ class Inspect:
                     res[col] = [row[i]]
         return res
 
-    async def check_problems(self, data: dict, chat_id: int, shop: str, sheet: str) -> None:
+    async def bad_price_handler(self, data: dict, chat_id: int, shop: str, sheet: str):
         for i, prof in enumerate(data.get('perc_w_gift')):
-            prof = float(prof.replace('%', ''))
+            try:
+                prof = float(prof.replace('%', ''))
+            except ValueError:
+                await self._generate_and_send_bad_mess(
+                    ['developers'], chat_id, shop, message_formula_check, 'Исправил',
+                    'formula_error', sheet
+                )
+                return
+
             order = data.get('order_num')[i]
             prof_amount = data.get('profit_amount')[i]
             status_1 = data.get('status1')[i]
@@ -80,11 +100,49 @@ class Inspect:
             if prof <= -7 and not in_db:
                 await self._mes_sender_bp(order, prof_amount, prof, shop, sheet, chat_id)
             elif prof > -7 and in_db:
-                await self._mes_deleter(shop, order, chat_id)
-            elif status_1 == 'Жду трек':
-                await self._mes_deleter(shop, order, chat_id)
+                await self._mes_deleter(shop, order, chat_id, 'bad_price')
+            elif status_1 == 'Жду трек' and in_db:
+                await self._mes_deleter(shop, order, chat_id, 'bad_price')
             elif status_2 == 'закуплен' and in_db:
-                await self._mes_deleter(shop, order, chat_id)
+                await self._mes_deleter(shop, order, chat_id, 'bad_price')
+
+    async def update_fee_check(self, data: dict, chat_id: int, shop: str):
+        all_fee = data.get('fee')
+        all_fee_num = len(all_fee)
+        no_fee = 0
+        for fee in all_fee:
+            if fee.strip() == '-':
+                no_fee += 1
+        no_fee_perc = round(no_fee / all_fee_num, 2)
+        if no_fee_perc > 0.5:
+            await self._generate_and_send_bad_mess(
+                ['developers'], chat_id, shop, message_need_fee_update, 'Обновил Fee',
+                'need_fee_update'
+            )
+
+    async def script_no_check_price(self, data: dict, chat_id: int, shop: str):
+        purch_days = data.get('purchase_date')
+        buy_price = data.get('buy_price')
+        suppliers = data.get('supplier_link')
+        b_price_len = len(buy_price)
+        no_price = 0
+        for i, day in purch_days:
+            is_today = today_or_not(day)
+            if is_today:
+                price = buy_price[i]
+                if price == '' and suppliers[i] != '':
+                    no_price += 1
+        no_price_perc = round(no_price / b_price_len)
+        if no_price_perc > 0.3:
+            await self._generate_and_send_bad_mess(
+                ['developers'], chat_id, shop, message_no_scraping_price(), 'Исправил',
+                'no_price_scrapping'
+            )
+
+    async def check_problems(self, data: dict, chat_id: int, shop: str, sheet: str) -> None:
+        await self.bad_price_handler(data, chat_id, shop, sheet)
+        await self.update_fee_check(data, chat_id, shop)
+        await self.script_no_check_price(data, chat_id, shop)
 
     async def check_attentions(self, data: dict, chat_id: int, shop: str, sheet: str) -> None:
         await self.attention_handler('Срочно проблема', data, 'analysts', shop, sheet, chat_id)
@@ -103,6 +161,6 @@ class Inspect:
             if status_1 == status_point and not in_db:
                 await self._mes_sender_at(date, status_1, order, shop, sheet, worker_type, chat, status_point)
             elif in_db and status_1 != status_point:
-                await self._mes_deleter(shop, order, chat)
+                await self._mes_deleter(shop, order, chat, status_point)
             elif in_db and status_2 == 'закуплен':
-                await self._mes_deleter(shop, order, chat)
+                await self._mes_deleter(shop, order, chat, status_point)
