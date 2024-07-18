@@ -57,6 +57,14 @@ def message_no_collection_supp(workers: str, shop: str):
             f'На магазине "{shop}" скрипт не тянет поставщиков.')
 
 
+def message_bad_supplier(workers: str, shop: str, order: str, sheet: str):
+    return (f'{workers}\n'
+            f'⚠️ЗАПРЕЩЕНКА!\n\n'
+            f'{order}\n\n'
+            f'Shop: {shop}\n'
+            f'Sheet: {sheet}')
+
+
 def message_bad_price(
         workers: str, order_id: str, prof_amount: str, prof_perc: float, shop_name: str, sheet_name: str
 ) -> str:

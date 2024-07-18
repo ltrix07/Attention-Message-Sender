@@ -1,6 +1,6 @@
 from attention_sender.utils import read_json, message_bad_price, message_attention, message_no_sheet, \
     message_forbidden, message_formula_check, message_need_fee_update, today_or_not, message_no_scraping_price, \
-    message_no_collection_supp
+    message_no_collection_supp, message_bad_supplier
 from attention_sender.telegram_bot import db, delete_message, send_message_w_button, send_message
 from attention_sender.errors import google_sheet_err_proc
 from typing import Callable
@@ -11,6 +11,19 @@ class Inspect:
     def __init__(self, staff_data_ph: str):
         self.staff = read_json(staff_data_ph)
 
+    def _collect_workers(self, workers_type: list | str = 'all') -> str:
+        workers_str = ""
+        if workers_type == 'all':
+            for workers in self.staff.keys():
+                workers_str += ", ".join(self.staff[workers])
+        else:
+            for index, worker in enumerate(workers_type):
+                if index == len(workers_type) - 1:
+                    workers_str += ", ".join(self.staff.get(worker, []))
+                else:
+                    workers_str += ", ".join(self.staff.get(worker, [])) + ", "
+        return workers_str
+
     async def _mes_sender_bp(
             self, order: str, prof_amount: str, prof: float, shop: str, sheet: str, chat_id: int
     ) -> None:
@@ -18,6 +31,13 @@ class Inspect:
             + ', ' + ", ".join(self.staff.get('managers'))
         message = message_bad_price(workers, order, prof_amount, prof, shop, sheet)
         await send_message(chat_id, message, shop, 'bad_price', order)
+
+    async def _mes_sender_bs(
+            self, order: str, shop: str, sheet: str, chat_id: int, workers_type: list | str = 'all'
+    ):
+        workers_str = self._collect_workers(workers_type)
+        message = message_bad_supplier(workers_str, shop, order, sheet)
+        await send_message(chat_id, message, shop, 'bad_supplier', order)
 
     async def _mes_sender_at(
             self, date: str, status: str, order: str, shop: str, sheet: str,
@@ -30,15 +50,10 @@ class Inspect:
         await send_message(chat, message, shop, status_point, order)
 
     async def _generate_and_send_bad_mess(
-            self, workers_list: list, chat_id: int, shop_name: str, mess_func: Callable,
+            self, workers_list: list | str, chat_id: int, shop_name: str, mess_func: Callable,
             btn_txt: str, mes_type: str, sheet: str | None = None
     ):
-        workers_str = ""
-        for index, worker in enumerate(workers_list):
-            if index == len(workers_list) - 1:
-                workers_str += ", ".join(self.staff.get(worker, []))
-            else:
-                workers_str += ", ".join(self.staff.get(worker, [])) + ", "
+        workers_str = self._collect_workers(workers_list)
         if sheet:
             message = mess_func(workers_str, shop_name, sheet)
         else:
@@ -170,8 +185,17 @@ class Inspect:
                 'no_suppliers_collection'
             )
 
+    async def bad_suppliers_check(self, data: dict, chat_id: int, shop: str, sheet: str):
+        comm_field = data.get('comment_field')
+        orders = data.get('order_num')
+        for i, comment in enumerate(comm_field):
+            if 'ЗАПРЕЩЕНКА!' in comment:
+                order = orders[i]
+                await self._mes_sender_bs(order, shop, sheet, chat_id, ['analysts'])
+
     async def check_problems(self, data: dict, chat_id: int, shop: str, sheet: str) -> None:
         await self.bad_price_handler(data, chat_id, shop, sheet)
+        await self.bad_suppliers_check(data, chat_id, shop, sheet)
         await self.script_no_check_price(data, chat_id, shop)
         await self.script_no_collect_suppliers(data, chat_id, shop)
         if str(datetime.now().month) == str(sheet):
