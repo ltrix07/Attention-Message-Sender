@@ -189,9 +189,12 @@ class Inspect:
         comm_field = data.get('comment_field')
         orders = data.get('order_num')
         for i, comment in enumerate(comm_field):
-            if 'ЗАПРЕЩЕНКА!' in comment:
-                order = orders[i]
+            order = orders[i]
+            in_db = db.check_values_in_columns(shop_name=shop, message_type='bad_supplier', order_id=order)
+            if not in_db and 'ЗАПРЕЩЕНКА!' in comment:
                 await self._mes_sender_bs(order, shop, sheet, chat_id, ['analysts'])
+            elif in_db and 'ЗАПРЕЩЕНКА!' not in comment:
+                await self._mes_deleter(shop, order, chat_id, 'bad_supplier')
 
     async def check_problems(self, data: dict, chat_id: int, shop: str, sheet: str) -> None:
         await self.bad_price_handler(data, chat_id, shop, sheet)
