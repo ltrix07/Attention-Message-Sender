@@ -35,9 +35,9 @@ class Inspect:
         workers_str = ""
         for index, worker in enumerate(workers_list):
             if index == len(workers_list) - 1:
-                workers_str += ", ".join(self.staff.get(worker))
+                workers_str += ", ".join(self.staff.get(worker, []))
             else:
-                workers_str += ", ".join(self.staff.get(worker)) + ", "
+                workers_str += ", ".join(self.staff.get(worker, [])) + ", "
         if sheet:
             message = mess_func(workers_str, shop_name, sheet)
         else:
