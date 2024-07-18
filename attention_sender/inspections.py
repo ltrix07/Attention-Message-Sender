@@ -188,12 +188,14 @@ class Inspect:
     async def bad_suppliers_check(self, data: dict, chat_id: int, shop: str, sheet: str):
         comm_field = data.get('comment_field')
         orders = data.get('order_num')
+        statuses_1 = data.get('status1')
         for i, comment in enumerate(comm_field):
             order = orders[i]
+            status_1 = statuses_1[i]
             in_db = db.check_values_in_columns(shop_name=shop, message_type='bad_supplier', order_id=order)
-            if not in_db and 'ЗАПРЕЩЕНКА!' in comment:
+            if not in_db and 'ЗАПРЕЩЕНКА!' in comment and status_1 == '':
                 await self._mes_sender_bs(order, shop, sheet, chat_id, ['analysts'])
-            elif in_db and 'ЗАПРЕЩЕНКА!' not in comment:
+            elif in_db and ('ЗАПРЕЩЕНКА!' not in comment) or (status_1 != ''):
                 await self._mes_deleter(shop, order, chat_id, 'bad_supplier')
 
     async def check_problems(self, data: dict, chat_id: int, shop: str, sheet: str) -> None:
