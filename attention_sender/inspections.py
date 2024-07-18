@@ -4,6 +4,7 @@ from attention_sender.utils import read_json, message_bad_price, message_attenti
 from attention_sender.telegram_bot import db, delete_message, send_message_w_button, send_message
 from attention_sender.errors import google_sheet_err_proc
 from typing import Callable
+from datetime import datetime
 
 
 class Inspect:
@@ -171,9 +172,10 @@ class Inspect:
 
     async def check_problems(self, data: dict, chat_id: int, shop: str, sheet: str) -> None:
         await self.bad_price_handler(data, chat_id, shop, sheet)
-        await self.update_fee_check(data, chat_id, shop)
         await self.script_no_check_price(data, chat_id, shop)
         await self.script_no_collect_suppliers(data, chat_id, shop)
+        if str(datetime.now().month) == str(sheet):
+            await self.update_fee_check(data, chat_id, shop)
 
     async def check_attentions(self, data: dict, chat_id: int, shop: str, sheet: str) -> None:
         await self.attention_handler('Срочно проблема', data, 'analysts', shop, sheet, chat_id)
