@@ -16,7 +16,7 @@ dp = Dispatcher()
 async def callback_button_delete(callback_query: types.CallbackQuery):
     chat_id = callback_query.message.chat.id
     message_id = callback_query.message.message_id
-    await bot.delete_message(chat_id, message_id)
+    await bot.delete_message(chat_id, message_id, request_timeout=120)
     db.delete_message(chat_id=chat_id, message_id=message_id)
 
 
@@ -26,7 +26,7 @@ async def send_message_w_button(
     if not db.check_values_in_columns(shop_name=shop_name, message_type=mes_type):
         button = InlineKeyboardButton(text=button_text, callback_data='button_click_del')
         keyboard = InlineKeyboardMarkup(inline_keyboard=[[button]])
-        mes = await bot.send_message(chat_id, message, reply_markup=keyboard)
+        mes = await bot.send_message(chat_id, message, reply_markup=keyboard, request_timeout=120)
         db.sent_mes_save(mes, shop_name, order, mes_type)
 
 
@@ -34,13 +34,13 @@ async def send_message(
         chat_id: int, message: str, shop_name: str, mes_type: str, order: str
 ) -> None:
     if not db.check_values_in_columns(shop_name=shop_name, message_type=mes_type, order_id=order):
-        mes = await bot.send_message(chat_id, message)
+        mes = await bot.send_message(chat_id, message, request_timeout=120)
         db.sent_mes_save(mes, shop_name, order, mes_type)
 
 
 async def delete_message(chat_id: int, message_id: int) -> None:
     try:
-        await bot.delete_message(chat_id, message_id)
+        await bot.delete_message(chat_id, message_id, request_timeout=120)
     except aiogram.exceptions.TelegramBadRequest as error:
         if 'message to delete not found' in str(error):
             pass
