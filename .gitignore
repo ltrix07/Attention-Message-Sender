@@ -1,4 +1,5 @@
 creds/
+cech/
 db/chat_data.json
 db/staff.json
 db/spreadsheets.json
