@@ -71,7 +71,7 @@ class Inspect:
             self, shop_name: str, chat_id: int, sheets: list, now_month: int
     ):
         err_stat = await google_sheet_err_proc(sheets)
-        if not err_stat:
+        if err_stat == 'forbidden':
             await self._generate_and_send_bad_mess(
                 ['analysts', 'developers', 'managers'],  chat_id, shop_name, message_forbidden,
                 'Дал доступ', 'no_access'
