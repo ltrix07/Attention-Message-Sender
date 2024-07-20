@@ -38,6 +38,7 @@ async def look_table(g_creds_ph: str, chat_data: dict, shop_name: str, table_inf
 
     table_id = table_inf.get('table_id')
 
+    print('Getting data from sheet')
     sheets = g_api.get_sheets_name(table_id)
     now_m, prev_m = collector.define_months()
     chat_problems = chat_data.get('chat_w_problems')
@@ -46,8 +47,10 @@ async def look_table(g_creds_ph: str, chat_data: dict, shop_name: str, table_inf
     insp = await inspector.now_m_in_sheet(shop_name, chat_problems, sheets, now_m)
     if insp:
         if str(now_m) in sheets:
+            print('Processing now')
             await sheet_look(inspector, g_api, table_inf, now_m, chat_problems, chat_attention, shop_name)
         elif str(prev_m) in sheets:
+            print('Processing prev')
             await sheet_look(inspector, g_api, table_inf, prev_m, chat_problems, chat_attention, shop_name)
         elif f'azat_{now_m}' in sheets:
             await sheet_look(inspector, g_api, table_inf, f'azat_{now_m}', chat_problems, chat_attention, shop_name)

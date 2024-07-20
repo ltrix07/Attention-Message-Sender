@@ -70,6 +70,7 @@ class Inspect:
     async def now_m_in_sheet(
             self, shop_name: str, chat_id: int, sheets: list, now_month: int
     ):
+        print('Processing now month in sheet')
         err_stat = await google_sheet_err_proc(sheets)
         if not err_stat:
             print('Want to send no access')
