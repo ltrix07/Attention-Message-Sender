@@ -72,12 +72,14 @@ class Inspect:
     ):
         err_stat = await google_sheet_err_proc(sheets)
         if not err_stat:
+            print('Want to send no access')
             await self._generate_and_send_bad_mess(
                 ['analysts', 'developers', 'managers'],  chat_id, shop_name, message_forbidden,
                 'Дал доступ', 'no_access'
             )
             return False
         elif str(now_month) not in sheets:
+            print('Want to send no sheet')
             await self._generate_and_send_bad_mess(
                 ['analysts', 'developers'], chat_id, shop_name, message_no_sheet, 'Добавил лист',
                 'no_sheet'
@@ -114,6 +116,7 @@ class Inspect:
             in_db = db.check_values_in_columns(shop_name=shop, message_type='bad_price', order_id=order)
 
             if not in_db and prof <= -7 and status_1 == '' and status_2 == '':
+                print('Want to send bad price')
                 await self._mes_sender_bp(order, prof_amount, prof, shop, sheet, chat_id)
             elif prof > -7 and in_db:
                 await self._mes_deleter(shop, order, chat_id, 'bad_price')
@@ -129,6 +132,7 @@ class Inspect:
                 no_fee += 1
         no_fee_perc = round(no_fee / all_fee_num, 2)
         if no_fee_perc > 0.5:
+            print('Want to send no fee')
             await self._generate_and_send_bad_mess(
                 ['developers'], chat_id, shop, message_need_fee_update, 'Обновил Fee',
                 'need_fee_update'
@@ -155,6 +159,7 @@ class Inspect:
                         no_price += 1
         no_price_perc = round(no_price / b_price_len, 2)
         if no_price_perc > 0.3:
+            print('Want to send no price scrapping')
             await self._generate_and_send_bad_mess(
                 ['developers'], chat_id, shop, message_no_scraping_price, 'Исправил',
                 'no_price_scrapping'
@@ -180,6 +185,7 @@ class Inspect:
                         no_supp += 1
         no_supp_perc = round(no_supp / suppliers_len, 2)
         if no_supp_perc > 0.4:
+            print('Want to send no supplier collection')
             await self._generate_and_send_bad_mess(
                 ['developers'], chat_id, shop, message_no_collection_supp, 'Исправил',
                 'no_suppliers_collection'
@@ -194,6 +200,7 @@ class Inspect:
             status_1 = statuses_1[i]
             in_db = db.check_values_in_columns(shop_name=shop, message_type='bad_supplier', order_id=order)
             if not in_db and 'ЗАПРЕЩЕНКА!' in comment and status_1 == '':
+                print('Want to send bad supplier')
                 await self._mes_sender_bs(order, shop, sheet, chat_id, ['analysts'])
             elif in_db and ('ЗАПРЕЩЕНКА!' not in comment or status_1 != ''):
                 await self._mes_deleter(shop, order, chat_id, 'bad_supplier')
