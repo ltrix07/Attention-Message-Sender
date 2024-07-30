@@ -6,6 +6,7 @@ from aiogram.types import Message
 class DataBase:
     def __init__(self, db_ph: str = './cech/messages.db'):
         self.db_ph = db_ph
+        self.conn = None
 
     async def initialize(self):
         await self._check_dir()
