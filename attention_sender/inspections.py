@@ -11,7 +11,7 @@ class Inspect:
     def __init__(self, staff_data_ph: str):
         self.staff = read_json(staff_data_ph)
 
-    def _collect_workers(self, workers_type: list | str = 'all') -> str:
+    async def _collect_workers(self, workers_type: list | str = 'all') -> str:
         workers_str = ""
         if workers_type == 'all':
             for workers in self.staff.keys():
@@ -35,7 +35,7 @@ class Inspect:
     async def _mes_sender_bs(
             self, order: str, shop: str, sheet: str, chat_id: int, workers_type: list | str = 'all'
     ):
-        workers_str = self._collect_workers(workers_type)
+        workers_str = await self._collect_workers(workers_type)
         message = message_bad_supplier(workers_str, shop, order, sheet)
         await send_message(chat_id, message, shop, 'bad_supplier', order)
 
@@ -53,7 +53,7 @@ class Inspect:
             self, workers_list: list | str, chat_id: int, shop_name: str, mess_func: Callable,
             btn_txt: str, mes_type: str, sheet: str | None = None
     ):
-        workers_str = self._collect_workers(workers_list)
+        workers_str = await self._collect_workers(workers_list)
         if sheet:
             message = mess_func(workers_str, shop_name, sheet)
         else:
@@ -64,7 +64,7 @@ class Inspect:
 
     @staticmethod
     async def _mes_deleter(shop: str, order: str, chat_id: int, mes_type: str) -> None:
-        mess_id = db.get_item('message_id', shop_name=shop, message_type=mes_type, order_id=order)
+        mess_id = await db.get_item('message_id', shop_name=shop, message_type=mes_type, order_id=order)
         await delete_message(chat_id, mess_id)
 
     async def now_m_in_sheet(
@@ -111,7 +111,7 @@ class Inspect:
             prof_amount = data.get('profit_amount')[i]
             status_1 = data.get('status1')[i]
             status_2 = data.get('status2')[i]
-            in_db = db.check_values_in_columns(shop_name=shop, message_type='bad_price', order_id=order)
+            in_db = await db.check_values_in_columns(shop_name=shop, message_type='bad_price', order_id=order)
 
             if not in_db and prof <= -7 and status_1 == '' and status_2 == '':
                 await self._mes_sender_bp(order, prof_amount, prof, shop, sheet, chat_id)
@@ -192,7 +192,7 @@ class Inspect:
         for i, comment in enumerate(comm_field):
             order = orders[i]
             status_1 = statuses_1[i]
-            in_db = db.check_values_in_columns(shop_name=shop, message_type='bad_supplier', order_id=order)
+            in_db = await db.check_values_in_columns(shop_name=shop, message_type='bad_supplier', order_id=order)
             if not in_db and 'ЗАПРЕЩЕНКА!' in comment and status_1 == '':
                 await self._mes_sender_bs(order, shop, sheet, chat_id, ['analysts'])
             elif in_db and ('ЗАПРЕЩЕНКА!' not in comment or status_1 != ''):
@@ -218,7 +218,7 @@ class Inspect:
             status_2 = data.get('status2')[i]
             order = data.get('order_num')[i]
             date = data.get('purchase_date')[i]
-            in_db = db.check_values_in_columns(shop_name=shop, message_type=status_point, order_id=order)
+            in_db = await db.check_values_in_columns(shop_name=shop, message_type=status_point, order_id=order)
 
             if not in_db and status_1 == status_point and status_2 != 'закуплен':
                 await self._mes_sender_at(date, status_1, order, shop, sheet, worker_type, chat, status_point)

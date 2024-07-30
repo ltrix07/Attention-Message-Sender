@@ -31,28 +31,28 @@ async def callback_button_delete(callback_query: types.CallbackQuery):
     message_id = callback_query.message.message_id
     await do_bot_action_w_except(
         bot, 'delete_message', chat_id=chat_id, message_id=message_id, request_timeout=120)
-    db.delete_message(chat_id=chat_id, message_id=message_id)
+    await db.delete_message(chat_id=chat_id, message_id=message_id)
 
 
 async def send_message_w_button(
         chat_id: int, message: str, button_text: str, shop_name: str, mes_type: str, order: str | None
 ) -> None:
-    if not db.check_values_in_columns(shop_name=shop_name, message_type=mes_type):
+    if not await db.check_values_in_columns(shop_name=shop_name, message_type=mes_type):
         button = InlineKeyboardButton(text=button_text, callback_data='button_click_del')
         keyboard = InlineKeyboardMarkup(inline_keyboard=[[button]])
         mes = await do_bot_action_w_except(
             bot, 'send_message', chat_id=chat_id, text=message, reply_markup=keyboard, request_timeout=120)
-        db.sent_mes_save(mes, shop_name, order, mes_type)
+        await db.sent_mes_save(mes, shop_name, order, mes_type)
 
 
 async def send_message(
         chat_id: int, message: str, shop_name: str, mes_type: str, order: str
 ) -> None:
-    if not db.check_values_in_columns(shop_name=shop_name, message_type=mes_type, order_id=order):
+    if not await db.check_values_in_columns(shop_name=shop_name, message_type=mes_type, order_id=order):
         mes = await do_bot_action_w_except(
             bot, 'send_message', chat_id=chat_id, text=message, request_timeout=120
         )
-        db.sent_mes_save(mes, shop_name, order, mes_type)
+        await db.sent_mes_save(mes, shop_name, order, mes_type)
 
 
 async def delete_message(chat_id: int, message_id: int) -> None:
@@ -61,4 +61,4 @@ async def delete_message(chat_id: int, message_id: int) -> None:
     except exceptions.TelegramBadRequest as error:
         if 'message to delete not found' in str(error):
             pass
-    db.delete_message(chat_id=chat_id, message_id=message_id)
+    await db.delete_message(chat_id=chat_id, message_id=message_id)

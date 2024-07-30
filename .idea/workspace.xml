@@ -4,9 +4,8 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="6c6bbe42-0a42-435c-808c-fd6466617e61" name="Changes" comment="add bad supplier check">
+    <list default="true" id="6c6bbe42-0a42-435c-808c-fd6466617e61" name="Changes" comment="add exceptions processing func">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/attention_sender/telegram_bot.py" beforeDir="false" afterPath="$PROJECT_DIR$/attention_sender/telegram_bot.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -44,22 +43,22 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent"><![CDATA[{
-  "keyToString": {
-    "ASKED_MARK_IGNORED_FILES_AS_EXCLUDED": "true",
-    "Python.__init__ (1).executor": "Run",
-    "Python.__init__.executor": "Run",
-    "Python.inspections.executor": "Run",
-    "Python.main.executor": "Run",
-    "Python.maneger.executor": "Run",
-    "Python.test_now_m_in_sheet.executor": "Run",
-    "RunOnceActivity.ShowReadmeOnStart": "true",
-    "git-widget-placeholder": "master",
-    "ignore.virus.scanning.warn.message": "true",
-    "last_opened_file_path": "C:/Users/Владимир/PycharmProjects/Attention-Message-Sender/cech",
-    "settings.editor.selected.configurable": "preferences.lookFeel"
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;ASKED_MARK_IGNORED_FILES_AS_EXCLUDED&quot;: &quot;true&quot;,
+    &quot;Python.__init__ (1).executor&quot;: &quot;Run&quot;,
+    &quot;Python.__init__.executor&quot;: &quot;Run&quot;,
+    &quot;Python.inspections.executor&quot;: &quot;Run&quot;,
+    &quot;Python.main.executor&quot;: &quot;Run&quot;,
+    &quot;Python.maneger.executor&quot;: &quot;Run&quot;,
+    &quot;Python.test_now_m_in_sheet.executor&quot;: &quot;Run&quot;,
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;master&quot;,
+    &quot;ignore.virus.scanning.warn.message&quot;: &quot;true&quot;,
+    &quot;last_opened_file_path&quot;: &quot;C:/Users/Владимир/PycharmProjects/Attention-Message-Sender/cech&quot;,
+    &quot;settings.editor.selected.configurable&quot;: &quot;preferences.lookFeel&quot;
   }
-}]]></component>
+}</component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
       <recent name="C:\Users\Владимир\PycharmProjects\Attention-Message-Sender\cech" />
@@ -425,7 +424,15 @@
       <option name="project" value="LOCAL" />
       <updated>1721481281576</updated>
     </task>
-    <option name="localTasksCounter" value="28" />
+    <task id="LOCAL-00028" summary="add exceptions processing func">
+      <option name="closed" value="true" />
+      <created>1722002929290</created>
+      <option name="number" value="00028" />
+      <option name="presentableId" value="LOCAL-00028" />
+      <option name="project" value="LOCAL" />
+      <updated>1722002929290</updated>
+    </task>
+    <option name="localTasksCounter" value="29" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -442,6 +449,7 @@
   <component name="VcsManagerConfiguration">
     <MESSAGE value="drop" />
     <MESSAGE value="add bad supplier check" />
-    <option name="LAST_COMMIT_MESSAGE" value="add bad supplier check" />
+    <MESSAGE value="add exceptions processing func" />
+    <option name="LAST_COMMIT_MESSAGE" value="add exceptions processing func" />
   </component>
 </project>

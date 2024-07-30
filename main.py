@@ -39,7 +39,7 @@ async def look_table(g_creds_ph: str, chat_data: dict, shop_name: str, table_inf
     table_id = table_inf.get('table_id')
 
     sheets = g_api.get_sheets_name(table_id)
-    now_m, prev_m = collector.define_months()
+    now_m, prev_m = await collector.define_months()
     chat_problems = chat_data.get('chat_w_problems')
     chat_attention = chat_data.get('chat_w_attentions')
 
