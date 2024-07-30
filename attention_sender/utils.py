@@ -3,7 +3,7 @@ from datetime import datetime
 
 
 def read_json(file_path: str) -> dict:
-    async with open(file_path, 'r') as f:
+    with open(file_path, 'r') as f:
         return json.load(f)
 
 
