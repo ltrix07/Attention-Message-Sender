@@ -1,7 +1,8 @@
 from attention_sender.utils import read_json, message_bad_price, message_attention, message_no_sheet, \
     message_forbidden, message_formula_check, message_need_fee_update, today_or_not, message_no_scraping_price, \
     message_no_collection_supp, message_bad_supplier
-from attention_sender.telegram_bot import db, delete_message, send_message_w_button, send_message
+from attention_sender.telegram_bot import delete_message, send_message_w_button, send_message
+from attention_sender.db import DataBase
 from attention_sender.errors import google_sheet_err_proc
 from typing import Callable
 from datetime import datetime
@@ -64,8 +65,9 @@ class Inspect:
 
     @staticmethod
     async def _mes_deleter(shop: str, order: str, chat_id: int, mes_type: str) -> None:
-        mess_id = await db.get_item('message_id', shop_name=shop, message_type=mes_type, order_id=order)
-        await delete_message(chat_id, mess_id)
+        async with DataBase() as db:
+            mess_id = await db.get_item('message_id', shop_name=shop, message_type=mes_type, order_id=order)
+            await delete_message(chat_id, mess_id)
 
     async def now_m_in_sheet(
             self, shop_name: str, chat_id: int, sheets: list, now_month: int
@@ -111,7 +113,8 @@ class Inspect:
             prof_amount = data.get('profit_amount')[i]
             status_1 = data.get('status1')[i]
             status_2 = data.get('status2')[i]
-            in_db = await db.check_values_in_columns(shop_name=shop, message_type='bad_price', order_id=order)
+            async with DataBase() as db:
+                in_db = await db.check_values_in_columns(shop_name=shop, message_type='bad_price', order_id=order)
 
             if not in_db and prof <= -7 and status_1 == '' and status_2 == '':
                 await self._mes_sender_bp(order, prof_amount, prof, shop, sheet, chat_id)
@@ -192,7 +195,9 @@ class Inspect:
         for i, comment in enumerate(comm_field):
             order = orders[i]
             status_1 = statuses_1[i]
-            in_db = await db.check_values_in_columns(shop_name=shop, message_type='bad_supplier', order_id=order)
+            async with DataBase() as db:
+                in_db = await db.check_values_in_columns(shop_name=shop, message_type='bad_supplier', order_id=order)
+
             if not in_db and 'ЗАПРЕЩЕНКА!' in comment and status_1 == '':
                 await self._mes_sender_bs(order, shop, sheet, chat_id, ['analysts'])
             elif in_db and ('ЗАПРЕЩЕНКА!' not in comment or status_1 != ''):
@@ -218,7 +223,8 @@ class Inspect:
             status_2 = data.get('status2')[i]
             order = data.get('order_num')[i]
             date = data.get('purchase_date')[i]
-            in_db = await db.check_values_in_columns(shop_name=shop, message_type=status_point, order_id=order)
+            async with DataBase() as db:
+                in_db = await db.check_values_in_columns(shop_name=shop, message_type=status_point, order_id=order)
 
             if not in_db and status_1 == status_point and status_2 != 'закуплен':
                 await self._mes_sender_at(date, status_1, order, shop, sheet, worker_type, chat, status_point)
