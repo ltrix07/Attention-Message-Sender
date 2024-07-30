@@ -4,8 +4,7 @@ from aiogram.types import Message
 
 
 class DataBase:
-    def __init__(self, db_ph: str):
-        self.conn = None
+    def __init__(self, db_ph: str = './cech/messages.db'):
         self.db_ph = db_ph
 
     async def initialize(self):

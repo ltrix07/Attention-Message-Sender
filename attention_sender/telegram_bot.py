@@ -6,7 +6,7 @@ from aiogram import Bot, Dispatcher, types, exceptions
 from aiogram.types import InlineKeyboardButton, InlineKeyboardMarkup
 
 
-db = DataBase('./cech/messages.db')
+db = DataBase()
 token = read_json('./creds/telegram.json').get('token')
 bot = Bot(token)
 dp = Dispatcher()
