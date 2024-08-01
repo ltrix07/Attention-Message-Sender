@@ -131,7 +131,7 @@ class Inspect:
             if fee.strip() == '-':
                 no_fee += 1
         no_fee_perc = round(no_fee / all_fee_num, 2)
-        if no_fee_perc > 0.5:
+        if no_fee_perc > 0.5 and all_fee_num > 9:
             await self._generate_and_send_bad_mess(
                 ['developers'], chat_id, shop, message_need_fee_update, 'Обновил Fee',
                 'need_fee_update'

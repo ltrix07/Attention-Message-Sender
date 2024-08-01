@@ -1,4 +1,5 @@
 import asyncio
+import random
 from attention_sender.utils import read_json
 from attention_sender.db import DataBase
 from aiogram import Bot, Dispatcher, types, exceptions
@@ -10,7 +11,7 @@ bot = Bot(token)
 dp = Dispatcher()
 
 
-async def do_bot_action_w_except(bot: Bot, method_name: str, retries: int = 5, **kwargs):
+async def do_bot_action_w_except(bot: Bot, method_name: str, retries: int = 10, **kwargs):
     for attempt in range(retries):
         try:
             method = getattr(bot, method_name)
@@ -18,8 +19,9 @@ async def do_bot_action_w_except(bot: Bot, method_name: str, retries: int = 5, *
             return result
         except exceptions.TelegramNetworkError as err:
             if attempt < retries - 1:
-                await asyncio.sleep(2 ** attempt)
+                await asyncio.sleep(2 ** attempt + random.uniform(0, 1))
             else:
+                print(f"Exceeded retries for {method_name}: {err}")
                 raise err
 
 

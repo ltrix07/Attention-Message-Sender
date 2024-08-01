@@ -4,8 +4,9 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="6c6bbe42-0a42-435c-808c-fd6466617e61" name="Changes" comment="add exceptions processing func">
+    <list default="true" id="6c6bbe42-0a42-435c-808c-fd6466617e61" name="Changes" comment="async db">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/attention_sender/telegram_bot.py" beforeDir="false" afterPath="$PROJECT_DIR$/attention_sender/telegram_bot.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -20,6 +21,11 @@
     </option>
   </component>
   <component name="Git.Settings">
+    <option name="RECENT_BRANCH_BY_REPOSITORY">
+      <map>
+        <entry key="$PROJECT_DIR$" value="master" />
+      </map>
+    </option>
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
   </component>
   <component name="GitHubPullRequestSearchHistory">{
@@ -53,7 +59,7 @@
     &quot;Python.maneger.executor&quot;: &quot;Run&quot;,
     &quot;Python.test_now_m_in_sheet.executor&quot;: &quot;Run&quot;,
     &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
-    &quot;git-widget-placeholder&quot;: &quot;master&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;async-version&quot;,
     &quot;ignore.virus.scanning.warn.message&quot;: &quot;true&quot;,
     &quot;last_opened_file_path&quot;: &quot;C:/Users/Владимир/PycharmProjects/Attention-Message-Sender/cech&quot;,
     &quot;settings.editor.selected.configurable&quot;: &quot;preferences.lookFeel&quot;
@@ -432,7 +438,55 @@
       <option name="project" value="LOCAL" />
       <updated>1722002929290</updated>
     </task>
-    <option name="localTasksCounter" value="29" />
+    <task id="LOCAL-00029" summary="async db">
+      <option name="closed" value="true" />
+      <created>1722363063329</created>
+      <option name="number" value="00029" />
+      <option name="presentableId" value="LOCAL-00029" />
+      <option name="project" value="LOCAL" />
+      <updated>1722363063329</updated>
+    </task>
+    <task id="LOCAL-00030" summary="async db">
+      <option name="closed" value="true" />
+      <created>1722363283808</created>
+      <option name="number" value="00030" />
+      <option name="presentableId" value="LOCAL-00030" />
+      <option name="project" value="LOCAL" />
+      <updated>1722363283808</updated>
+    </task>
+    <task id="LOCAL-00031" summary="async db">
+      <option name="closed" value="true" />
+      <created>1722363518857</created>
+      <option name="number" value="00031" />
+      <option name="presentableId" value="LOCAL-00031" />
+      <option name="project" value="LOCAL" />
+      <updated>1722363518857</updated>
+    </task>
+    <task id="LOCAL-00032" summary="async db">
+      <option name="closed" value="true" />
+      <created>1722363808240</created>
+      <option name="number" value="00032" />
+      <option name="presentableId" value="LOCAL-00032" />
+      <option name="project" value="LOCAL" />
+      <updated>1722363808240</updated>
+    </task>
+    <task id="LOCAL-00033" summary="async db">
+      <option name="closed" value="true" />
+      <created>1722364519840</created>
+      <option name="number" value="00033" />
+      <option name="presentableId" value="LOCAL-00033" />
+      <option name="project" value="LOCAL" />
+      <updated>1722364519840</updated>
+    </task>
+    <task id="LOCAL-00034" summary="async db">
+      <option name="closed" value="true" />
+      <created>1722366870937</created>
+      <option name="number" value="00034" />
+      <option name="presentableId" value="LOCAL-00034" />
+      <option name="project" value="LOCAL" />
+      <updated>1722366870937</updated>
+    </task>
+    <option name="localTasksCounter" value="35" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -450,6 +504,7 @@
     <MESSAGE value="drop" />
     <MESSAGE value="add bad supplier check" />
     <MESSAGE value="add exceptions processing func" />
-    <option name="LAST_COMMIT_MESSAGE" value="add exceptions processing func" />
+    <MESSAGE value="async db" />
+    <option name="LAST_COMMIT_MESSAGE" value="async db" />
   </component>
 </project>
