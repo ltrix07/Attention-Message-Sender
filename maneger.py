@@ -14,6 +14,10 @@ def add_shop():
         "table_id": input('Enter table id: '),
         "columns": {
             "status1": input('Enter column name for "status 1": '),
+            "status2": input('Enter column name for "status 2": '),
+            "fee": input('Enter column name for "fee": '),
+            "comment_field": input('Enter column name for "comment or eBay account": '),
+            "supplier_link": input('Enter column name for "supplier link": '),
             "purchase_date": input('Enter column name for "purchase date": '),
             "profit_amount": input('Enter columns name for "profit amount": '),
             "perc_profit": input('Enter columns name for "percent profit": '),
