@@ -204,7 +204,7 @@ class Inspect:
             elif in_db and ('ЗАПРЕЩЕНКА!' not in comment or status_1 != ''):
                 await self._mes_deleter(shop, order, chat_id, 'bad_supplier')
 
-    async def inspect_checker(self, data: dict, chat_id: int, shop: str, sheet: str):
+    async def inspect_checker(self, data: dict, chat_id: int, shop: str):
         time_is = datetime.now().time()
         if time_is <= TIME_TRIGGER:
             return
@@ -237,6 +237,7 @@ class Inspect:
         await self.bad_suppliers_check(data, chat_id, shop, sheet)
         await self.script_no_check_price(data, chat_id, shop)
         await self.script_no_collect_suppliers(data, chat_id, shop)
+        await self.inspect_checker(data, chat_id, shop)
         if str(datetime.now().month) == str(sheet):
             await self.update_fee_check(data, chat_id, shop)
 
