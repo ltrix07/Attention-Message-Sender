@@ -1,6 +1,7 @@
 from attention_sender.utils import read_json, message_bad_price, message_attention, message_no_sheet, \
     message_forbidden, message_formula_check, message_need_fee_update, today_or_not, message_no_scraping_price, \
-    message_no_collection_supp, message_bad_supplier
+    message_no_collection_supp, message_bad_supplier, message_inspect_checker
+from attention_sender import TIME_TRIGGER
 from attention_sender.telegram_bot import delete_message, send_message_w_button, send_message
 from attention_sender.db import DataBase
 from attention_sender.errors import google_sheet_err_proc
@@ -52,13 +53,13 @@ class Inspect:
 
     async def _generate_and_send_bad_mess(
             self, workers_list: list | str, chat_id: int, shop_name: str, mess_func: Callable,
-            btn_txt: str, mes_type: str, sheet: str | None = None
+            btn_txt: str, mes_type: str, sheet: str | None = None, **kwargs
     ):
         workers_str = await self._collect_workers(workers_list)
         if sheet:
-            message = mess_func(workers_str, shop_name, sheet)
+            message = mess_func(workers_str, shop_name, sheet, **kwargs)
         else:
-            message = mess_func(workers_str, shop_name)
+            message = mess_func(workers_str, shop_name, **kwargs)
         await send_message_w_button(
             chat_id, message, btn_txt, shop_name, mes_type, None
         )
@@ -202,6 +203,34 @@ class Inspect:
                 await self._mes_sender_bs(order, shop, sheet, chat_id, ['analysts'])
             elif in_db and ('ЗАПРЕЩЕНКА!' not in comment or status_1 != ''):
                 await self._mes_deleter(shop, order, chat_id, 'bad_supplier')
+
+    async def inspect_checker(self, data: dict, chat_id: int, shop: str, sheet: str):
+        time_is = datetime.now().time()
+        if time_is <= TIME_TRIGGER:
+            return
+        purch_days = data.get('purchase_date')
+        suppliers = data.get('supplier_link')
+        buy_price = data.get('buy_price')
+        no_stock = 0
+        orders_today = 0
+        for i, day in enumerate(purch_days):
+            is_today = today_or_not(day)
+            if is_today:
+                orders_today += 1
+
+        if orders_today > 5:
+            for i, day in enumerate(purch_days):
+                is_today = today_or_not(day)
+                if is_today:
+                    price = buy_price[i]
+                    if 'No stock' in price:
+                        no_stock += 1
+        no_stock_perc = round(no_stock / orders_today, 3)
+        if no_stock_perc > 0.1:
+            await self._generate_and_send_bad_mess(
+                ['developers'], chat_id, shop, message_inspect_checker, 'Включил чекер',
+                'inspect_checker', orders_today=orders_today, no_stock_qty=no_stock
+            )
 
     async def check_problems(self, data: dict, chat_id: int, shop: str, sheet: str) -> None:
         await self.bad_price_handler(data, chat_id, shop, sheet)

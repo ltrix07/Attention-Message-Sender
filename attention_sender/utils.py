@@ -77,6 +77,15 @@ def message_bad_price(
             f'Sheet name: "{sheet_name}"')
 
 
+def message_inspect_checker(
+        workers: str, shop: str, orders_today: int, no_stock_qty: int
+):
+    return (f'{workers}\n'
+            f'На магазине "{shop}", скорее всего, не работает чекер.\n'
+            f'Всего ордеров за сегодня: {orders_today}\n'
+            f'Из них No stock: {no_stock_qty}\n')
+
+
 def message_attention(
         workers: str, buy_date: str, status: str, order: str, shop_name: str, sheet_name: str, worker_type: str
 ) -> str:
