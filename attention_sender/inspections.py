@@ -131,12 +131,13 @@ class Inspect:
         for fee in all_fee:
             if fee.strip() == '-':
                 no_fee += 1
-        no_fee_perc = round(no_fee / all_fee_num, 2)
-        if no_fee_perc > 0.5 and all_fee_num > 9:
-            await self._generate_and_send_bad_mess(
-                ['developers'], chat_id, shop, message_need_fee_update, 'Обновил Fee',
-                'need_fee_update'
-            )
+        if no_fee > 0:
+            no_fee_perc = round(no_fee / all_fee_num, 2)
+            if no_fee_perc > 0.5 and all_fee_num > 9:
+                await self._generate_and_send_bad_mess(
+                    ['developers'], chat_id, shop, message_need_fee_update, 'Обновил Fee',
+                    'need_fee_update'
+                )
 
     async def script_no_check_price(self, data: dict, chat_id: int, shop: str):
         purch_days = data.get('purchase_date')
@@ -157,12 +158,13 @@ class Inspect:
                     price = buy_price[i]
                     if price == '' and suppliers[i] != '':
                         no_price += 1
-        no_price_perc = round(no_price / b_price_len, 2)
-        if no_price_perc > 0.3:
-            await self._generate_and_send_bad_mess(
-                ['developers'], chat_id, shop, message_no_scraping_price, 'Исправил',
-                'no_price_scrapping'
-            )
+        if no_price > 0:
+            no_price_perc = round(no_price / b_price_len, 2)
+            if no_price_perc > 0.3:
+                await self._generate_and_send_bad_mess(
+                    ['developers'], chat_id, shop, message_no_scraping_price, 'Исправил',
+                    'no_price_scrapping'
+                )
 
     async def script_no_collect_suppliers(self, data: dict, chat_id: int, shop: str):
         purch_days = data.get('purchase_date')
@@ -182,12 +184,13 @@ class Inspect:
                     supplier = suppliers[i]
                     if supplier == '':
                         no_supp += 1
-        no_supp_perc = round(no_supp / suppliers_len, 2)
-        if no_supp_perc > 0.4:
-            await self._generate_and_send_bad_mess(
-                ['developers'], chat_id, shop, message_no_collection_supp, 'Исправил',
-                'no_suppliers_collection'
-            )
+        if no_supp > 0:
+            no_supp_perc = round(no_supp / suppliers_len, 2)
+            if no_supp_perc > 0.4:
+                await self._generate_and_send_bad_mess(
+                    ['developers'], chat_id, shop, message_no_collection_supp, 'Исправил',
+                    'no_suppliers_collection'
+                )
 
     async def bad_suppliers_check(self, data: dict, chat_id: int, shop: str, sheet: str):
         comm_field = data.get('comment_field')
@@ -209,7 +212,6 @@ class Inspect:
         if time_is <= TIME_TRIGGER:
             return
         purch_days = data.get('purchase_date')
-        suppliers = data.get('supplier_link')
         buy_price = data.get('buy_price')
         no_stock = 0
         orders_today = 0
@@ -225,12 +227,13 @@ class Inspect:
                     price = buy_price[i]
                     if 'No stock' in price:
                         no_stock += 1
-        no_stock_perc = round(no_stock / orders_today, 3)
-        if no_stock_perc > 0.1:
-            await self._generate_and_send_bad_mess(
-                ['developers'], chat_id, shop, message_inspect_checker, 'Включил чекер',
-                'inspect_checker', orders_today=orders_today, no_stock_qty=no_stock
-            )
+        if no_stock > 0:
+            no_stock_perc = round(no_stock / orders_today, 3)
+            if no_stock_perc > 0.1:
+                await self._generate_and_send_bad_mess(
+                    ['developers'], chat_id, shop, message_inspect_checker, 'Включил чекер',
+                    'inspect_checker', orders_today=orders_today, no_stock_qty=no_stock
+                )
 
     async def check_problems(self, data: dict, chat_id: int, shop: str, sheet: str) -> None:
         await self.bad_price_handler(data, chat_id, shop, sheet)

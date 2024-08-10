@@ -4,11 +4,8 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="6c6bbe42-0a42-435c-808c-fd6466617e61" name="Changes" comment="all_fee_num must be &gt; 9 for send message">
+    <list default="true" id="6c6bbe42-0a42-435c-808c-fd6466617e61" name="Changes" comment="add inspect_checker">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/attention_sender/__init__.py" beforeDir="false" afterPath="$PROJECT_DIR$/attention_sender/__init__.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/attention_sender/inspections.py" beforeDir="false" afterPath="$PROJECT_DIR$/attention_sender/inspections.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/attention_sender/utils.py" beforeDir="false" afterPath="$PROJECT_DIR$/attention_sender/utils.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -496,7 +493,23 @@
       <option name="project" value="LOCAL" />
       <updated>1722497479922</updated>
     </task>
-    <option name="localTasksCounter" value="36" />
+    <task id="LOCAL-00036" summary="add inspect_checker">
+      <option name="closed" value="true" />
+      <created>1723210172503</created>
+      <option name="number" value="00036" />
+      <option name="presentableId" value="LOCAL-00036" />
+      <option name="project" value="LOCAL" />
+      <updated>1723210172503</updated>
+    </task>
+    <task id="LOCAL-00037" summary="add inspect_checker">
+      <option name="closed" value="true" />
+      <created>1723210254030</created>
+      <option name="number" value="00037" />
+      <option name="presentableId" value="LOCAL-00037" />
+      <option name="project" value="LOCAL" />
+      <updated>1723210254030</updated>
+    </task>
+    <option name="localTasksCounter" value="38" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -516,6 +529,7 @@
     <MESSAGE value="add exceptions processing func" />
     <MESSAGE value="async db" />
     <MESSAGE value="all_fee_num must be &gt; 9 for send message" />
-    <option name="LAST_COMMIT_MESSAGE" value="all_fee_num must be &gt; 9 for send message" />
+    <MESSAGE value="add inspect_checker" />
+    <option name="LAST_COMMIT_MESSAGE" value="add inspect_checker" />
   </component>
 </project>
