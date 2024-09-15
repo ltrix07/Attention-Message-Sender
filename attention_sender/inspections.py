@@ -117,11 +117,11 @@ class Inspect:
             async with DataBase() as db:
                 in_db = await db.check_values_in_columns(shop_name=shop, message_type='bad_price', order_id=order)
 
-            if not in_db and prof <= -7 and status_1 == '' and status_2 == '':
+            if not in_db and prof <= -7 and (status_1 == '' or status_1 == 'Треб.закуп преп') and status_2 == '':
                 return await self._mes_sender_bp(order, prof_amount, prof, shop, sheet, chat_id)
             elif prof > -7 and in_db:
                 return await self._mes_deleter(shop, order, chat_id, 'bad_price')
-            elif (status_1 != '' or status_2 != '') and in_db:
+            elif (status_1 != '' or status_1 == 'Треб.закуп преп' or status_2 != '') and in_db:
                 return await self._mes_deleter(shop, order, chat_id, 'bad_price')
             return
 
