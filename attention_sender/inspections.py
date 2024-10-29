@@ -2,7 +2,7 @@ from attention_sender.utils import read_json, message_bad_price, message_attenti
     message_forbidden, message_formula_check, message_need_fee_update, today_or_not, message_no_scraping_price, \
     message_no_collection_supp, message_bad_supplier, message_inspect_checker
 from attention_sender import TIME_TRIGGER
-from attention_sender.telegram_bot import delete_message, send_message_w_button, send_message
+from attention_sender.telegram_bot import delete_or_update_message, send_message_w_button, send_message
 from attention_sender.db import DataBase
 from attention_sender.errors import google_sheet_err_proc
 from typing import Callable
@@ -68,7 +68,7 @@ class Inspect:
     async def _mes_deleter(shop: str, order: str, chat_id: int, mes_type: str) -> None:
         async with DataBase() as db:
             mess_id = await db.get_item('message_id', shop_name=shop, message_type=mes_type, order_id=order)
-            await delete_message(chat_id, mess_id)
+            await delete_or_update_message(chat_id, mess_id)
 
     async def now_m_in_sheet(
             self, shop_name: str, chat_id: int, sheets: list, now_month: int

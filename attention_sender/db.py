@@ -34,7 +34,8 @@ class DataBase:
                 shop_name TEXT,
                 message_type TEXT,
                 order_id TEXT NULL,
-                text TEXT
+                text TEXT,
+                date DATE
             )
         '''):
             await self.conn.commit()
@@ -46,10 +47,10 @@ class DataBase:
         try:
             async with self.conn.execute(
                 '''
-                INSERT INTO sent_messages (message_id, chat_id, shop_name, message_type, order_id, text)
-                VALUES (?, ?, ?, ?, ?, ?)
+                INSERT INTO sent_messages (message_id, chat_id, shop_name, message_type, order_id, text, date)
+                VALUES (?, ?, ?, ?, ?, ?, ?)
                 ''',
-                (message.message_id, message.chat.id, shop_name, mes_type, order, message.text)
+                (message.message_id, message.chat.id, shop_name, mes_type, order, message.text, message.date)
             ):
                 await self.conn.commit()
         except aiosqlite.Error as e:
