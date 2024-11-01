@@ -67,8 +67,9 @@ class Inspect:
     @staticmethod
     async def _mes_deleter(shop: str, order: str, chat_id: int, mes_type: str) -> None:
         async with DataBase() as db:
-            mess_id = await db.get_item('message_id', shop_name=shop, message_type=mes_type, order_id=order)
-            await delete_or_update_message(chat_id, mess_id)
+            mess_id, mess_date = await db.get_item(["message_id", "date"], shop_name=shop,
+                                                   message_type=mes_type, order_id=order)
+            await delete_or_update_message(chat_id, mess_id, mess_date)
 
     async def now_m_in_sheet(
             self, shop_name: str, chat_id: int, sheets: list, now_month: int

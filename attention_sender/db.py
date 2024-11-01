@@ -91,13 +91,19 @@ class DataBase:
             print(f"Error occurred: {e}")
             return False
 
-    async def get_item(self, desired_col: str, **kwargs) -> str | int | None | bool:
+    async def get_item(self, desired_col: str | list[str], **kwargs) -> str | int | tuple | None | bool:
         keys = [key for key in kwargs.keys()]
         values = [value for value in kwargs.values()]
+
+        if isinstance(desired_col, list):
+            columns = ", ".join(desired_col)
+        else:
+            columns = desired_col
+
         try:
             async with self.conn.execute(
                 f'''
-                SELECT {desired_col} FROM sent_messages
+                SELECT {columns} FROM sent_messages
                 WHERE {" = ? AND ".join(keys)} = ?
                 LIMIT 1
                 ''',
@@ -105,7 +111,7 @@ class DataBase:
             ) as cursor:
                 res = await cursor.fetchone()
                 if res:
-                    return res[0]
+                    return res if isinstance(desired_col, list) else res[0]
                 else:
                     return None
         except aiosqlite.Error as e:
