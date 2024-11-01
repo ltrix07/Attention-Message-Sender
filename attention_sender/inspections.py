@@ -264,6 +264,8 @@ class Inspect:
     async def attention_handler(
             self, status_point: str, data: dict, worker_type: str, shop: str, sheet: str, chat: int
     ) -> None:
+        if not data.get('status1'):
+            return
         for i, status_1 in enumerate(data.get('status1')):
             status_2 = data.get('status2')[i]
             order = data.get('order_num')[i]
