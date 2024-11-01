@@ -101,6 +101,8 @@ class Inspect:
         return res
 
     async def bad_price_handler(self, data: dict, chat_id: int, shop: str, sheet: str):
+        if not data.get('perc_w_gift'):
+            return
         for i, prof in enumerate(data.get('perc_w_gift')):
             try:
                 prof = float(prof.replace('%', ''))
@@ -127,6 +129,8 @@ class Inspect:
             return
 
     async def update_fee_check(self, data: dict, chat_id: int, shop: str):
+        if not data.get('fee'):
+            return
         all_fee = data.get('fee')
         all_fee_num = len(all_fee)
         no_fee = 0
@@ -145,6 +149,8 @@ class Inspect:
         purch_days = data.get('purchase_date')
         buy_price = data.get('buy_price')
         suppliers = data.get('supplier_link')
+        if not purch_days or not buy_price or not suppliers:
+            return
         b_price_len = len(buy_price)
         no_price = 0
         orders_today = 0
@@ -171,6 +177,8 @@ class Inspect:
     async def script_no_collect_suppliers(self, data: dict, chat_id: int, shop: str):
         purch_days = data.get('purchase_date')
         suppliers = data.get('supplier_link')
+        if not purch_days or not suppliers:
+            return
         suppliers_len = len(suppliers)
         no_supp = 0
         orders_today = 0
@@ -198,6 +206,8 @@ class Inspect:
         comm_field = data.get('comment_field')
         orders = data.get('order_num')
         statuses_1 = data.get('status1')
+        if not comm_field or not orders or not statuses_1:
+            return
         for i, comment in enumerate(comm_field):
             order = orders[i]
             status_1 = statuses_1[i]
@@ -211,10 +221,10 @@ class Inspect:
 
     async def inspect_checker(self, data: dict, chat_id: int, shop: str):
         time_is = datetime.now().time()
-        if time_is <= TIME_TRIGGER:
-            return
         purch_days = data.get('purchase_date')
         buy_price = data.get('buy_price')
+        if time_is <= TIME_TRIGGER or not purch_days or not buy_price:
+            return
         no_stock = 0
         orders_today = 0
         for i, day in enumerate(purch_days):

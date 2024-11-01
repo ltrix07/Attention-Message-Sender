@@ -1,6 +1,7 @@
 import asyncio
 import random
-from datetime import datetime, timedelta
+from datetime import datetime
+from attention_sender import MESSAGE_LIFETIME
 from attention_sender.utils import read_json
 from attention_sender.db import DataBase
 from aiogram import Bot, Dispatcher, types, exceptions
@@ -10,8 +11,6 @@ from aiogram.types import InlineKeyboardButton, InlineKeyboardMarkup
 token = read_json('./creds/telegram.json').get('token')
 bot = Bot(token)
 dp = Dispatcher()
-
-MESSAGE_LIFETIME = timedelta(hours=48)
 
 
 async def do_bot_action_w_except(method_name: str, retries: int = 10, **kwargs):
