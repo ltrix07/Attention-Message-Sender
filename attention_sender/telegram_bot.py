@@ -1,6 +1,6 @@
 import asyncio
 import random
-from datetime import datetime
+from datetime import datetime, timezone
 from attention_sender import MESSAGE_LIFETIME
 from attention_sender.utils import read_json
 from attention_sender.db import DataBase
@@ -29,7 +29,7 @@ async def do_bot_action_w_except(method_name: str, retries: int = 10, **kwargs):
 
 async def delete_or_update_message(chat_id: int, message_id: int, message_date: str) -> None:
     message_date = datetime.strptime(message_date, "%Y-%m-%d %H:%M:%S%z")
-    if datetime.now() - message_date < MESSAGE_LIFETIME:
+    if datetime.now(timezone.utc) - message_date < MESSAGE_LIFETIME:
         try:
             await do_bot_action_w_except('delete_message', chat_id=chat_id, message_id=message_id, request_timeout=120)
         except exceptions.TelegramBadRequest as error:
