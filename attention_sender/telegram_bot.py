@@ -27,7 +27,8 @@ async def do_bot_action_w_except(method_name: str, retries: int = 10, **kwargs):
                 raise err
 
 
-async def delete_or_update_message(chat_id: int, message_id: int, message_date: datetime) -> None:
+async def delete_or_update_message(chat_id: int, message_id: int, message_date: str) -> None:
+    message_date = datetime.strptime(message_date, "%Y-%m-%d %H:%M:%S")
     if datetime.now() - message_date < MESSAGE_LIFETIME:
         try:
             await do_bot_action_w_except('delete_message', chat_id=chat_id, message_id=message_id, request_timeout=120)
