@@ -5,7 +5,6 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="6c6bbe42-0a42-435c-808c-fd6466617e61" name="Changes" comment="fix error if data.get returning NoneType">
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/attention_sender/telegram_bot.py" beforeDir="false" afterPath="$PROJECT_DIR$/attention_sender/telegram_bot.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
