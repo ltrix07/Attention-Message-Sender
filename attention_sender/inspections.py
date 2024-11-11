@@ -1,3 +1,4 @@
+import logging
 from attention_sender.utils import read_json, message_bad_price, message_attention, message_no_sheet, \
     message_forbidden, message_formula_check, message_need_fee_update, today_or_not, message_no_scraping_price, \
     message_no_collection_supp, message_bad_supplier, message_inspect_checker
@@ -11,6 +12,8 @@ from datetime import datetime
 
 class Inspect:
     def __init__(self, staff_data_ph: str):
+        logging.basicConfig(level=logging.INFO)
+        self.logger = logging.getLogger("INSPECT")
         self.staff = read_json(staff_data_ph)
 
     async def _collect_workers(self, workers_type: list | str = 'all') -> str:
@@ -82,6 +85,10 @@ class Inspect:
             )
             return False
         elif err_stat != 'bad_req' and str(now_month) not in sheets:
+            self.logger.warning(f"sheets: {sheets}")
+            self.logger.warning(f"err_stat: {err_stat}")
+            self.logger.warning(f"now_month: {now_month}; type: {type(now_month)}")
+            self.logger.warning("string month in sheets:", str(now_month) in sheets)
             await self._generate_and_send_bad_mess(
                 ['analysts', 'developers'], chat_id, shop_name, message_no_sheet, 'Добавил лист',
                 'no_sheet'
