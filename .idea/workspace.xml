@@ -590,7 +590,15 @@
       <option name="project" value="LOCAL" />
       <updated>1731358669792</updated>
     </task>
-    <option name="localTasksCounter" value="48" />
+    <task id="LOCAL-00048" summary="debugging logger">
+      <option name="closed" value="true" />
+      <created>1731508910766</created>
+      <option name="number" value="00048" />
+      <option name="presentableId" value="LOCAL-00048" />
+      <option name="project" value="LOCAL" />
+      <updated>1731508910766</updated>
+    </task>
+    <option name="localTasksCounter" value="49" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
