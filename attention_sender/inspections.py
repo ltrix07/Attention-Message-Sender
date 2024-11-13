@@ -124,13 +124,11 @@ class Inspect:
             prof_amount = data.get('profit_amount')[i]
             status_1 = data.get('status1')[i]
             status_2 = data.get('status2')[i]
-            if not order or not prof_amount or not status_1 or not status_2:
+            if not order or not prof_amount:
                 return
             async with DataBase() as db:
                 in_db = await db.check_values_in_columns(shop_name=shop, message_type='bad_price', order_id=order)
 
-            if shop == 'Треб.закуп преп':
-                self.logger.warning(f"{in_db} | {prof} | {status_1} | {status_2}")
             if not in_db and prof <= -7 and (status_1 == '' or status_1 == 'Треб.закуп преп') and status_2 == '':
                 return await self._mes_sender_bp(order, prof_amount, prof, shop, sheet, chat_id)
             elif prof > -7 and in_db:
