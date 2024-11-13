@@ -113,7 +113,6 @@ class Inspect:
         for i, prof in enumerate(data.get('perc_w_gift')):
             try:
                 prof = float(prof.replace('%', ''))
-                print(prof)
             except ValueError:
                 await self._generate_and_send_bad_mess(
                     ['developers'], chat_id, shop, message_formula_check, 'Исправил',
@@ -125,16 +124,22 @@ class Inspect:
             prof_amount = data.get('profit_amount')[i]
             status_1 = data.get('status1')[i]
             status_2 = data.get('status2')[i]
+            if not order or not prof_amount:
+                continue
+
             async with DataBase() as db:
                 in_db = await db.check_values_in_columns(shop_name=shop, message_type='bad_price', order_id=order)
 
             if not in_db and prof <= -7 and (status_1 == '' or status_1 == 'Треб.закуп преп') and status_2 == '':
-                return await self._mes_sender_bp(order, prof_amount, prof, shop, sheet, chat_id)
+                await self._mes_sender_bp(order, prof_amount, prof, shop, sheet, chat_id)
+                continue
             elif prof > -7 and in_db:
-                return await self._mes_deleter(shop, order, chat_id, 'bad_price')
+                await self._mes_deleter(shop, order, chat_id, 'bad_price')
+                continue
             elif (status_1 != '' or status_1 == 'Треб.закуп преп' or status_2 != '') and in_db:
-                return await self._mes_deleter(shop, order, chat_id, 'bad_price')
-            return
+                await self._mes_deleter(shop, order, chat_id, 'bad_price')
+                continue
+        return
 
     async def update_fee_check(self, data: dict, chat_id: int, shop: str):
         if not data.get('fee'):
