@@ -136,7 +136,7 @@ class Inspect:
             elif prof > -7 and in_db:
                 await self._mes_deleter(shop, order, chat_id, 'bad_price')
                 continue
-            elif (status_1 != '' or status_1 == 'Треб.закуп преп' or status_2 != '') and in_db:
+            elif (status_1 != '' or status_1 != 'Треб.закуп преп' or status_2 != '') and in_db:
                 await self._mes_deleter(shop, order, chat_id, 'bad_price')
                 continue
         return
