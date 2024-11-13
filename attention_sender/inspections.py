@@ -113,6 +113,7 @@ class Inspect:
         for i, prof in enumerate(data.get('perc_w_gift')):
             try:
                 prof = float(prof.replace('%', ''))
+                print(prof)
             except ValueError:
                 await self._generate_and_send_bad_mess(
                     ['developers'], chat_id, shop, message_formula_check, 'Исправил',
