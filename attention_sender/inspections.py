@@ -129,7 +129,7 @@ class Inspect:
             async with DataBase() as db:
                 in_db = await db.check_values_in_columns(shop_name=shop, message_type='bad_price', order_id=order)
 
-            if shop == 'cartier':
+            if shop == 'Треб.закуп преп':
                 print(f"{in_db} | {prof} | {status_1} | {status_2}")
             if not in_db and prof <= -7 and (status_1 == '' or status_1 == 'Треб.закуп преп') and status_2 == '':
                 return await self._mes_sender_bp(order, prof_amount, prof, shop, sheet, chat_id)
