@@ -124,8 +124,6 @@ class Inspect:
             prof_amount = data.get('profit_amount')[i]
             status_1 = data.get('status1')[i]
             status_2 = data.get('status2')[i]
-            if not order or not prof_amount:
-                return
             async with DataBase() as db:
                 in_db = await db.check_values_in_columns(shop_name=shop, message_type='bad_price', order_id=order)
 
