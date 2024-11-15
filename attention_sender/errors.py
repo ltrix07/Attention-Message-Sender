@@ -4,6 +4,8 @@ async def google_sheet_err_proc(g_proc_res: list | dict) -> str | None:
             for error in g_proc_res.get('errors'):
                 if 'forbidden' in error:
                     return 'forbidden'
+                if 'HttpError 500' in error:
+                    return 'bad_req'
     elif isinstance(g_proc_res, list) and len(g_proc_res) == 0:
         return 'bad_req'
     return 'ok'
