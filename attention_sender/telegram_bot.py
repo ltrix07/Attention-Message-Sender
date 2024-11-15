@@ -25,6 +25,11 @@ async def do_bot_action_w_except(method_name: str, retries: int = 10, **kwargs):
             else:
                 print(f"Exceeded retries for {method_name}: {err}")
                 raise err
+        except exceptions.TelegramRetryAfter as err:
+            if attempt < retries - 1:
+                await asyncio.sleep(err.retry_after)
+            else:
+                raise err
 
 
 async def delete_or_update_message(chat_id: int, message_id: int, message_date: str | datetime) -> None:
