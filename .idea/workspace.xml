@@ -214,14 +214,6 @@
       <option name="presentableId" value="Default" />
       <updated>1720801568065</updated>
     </task>
-    <task id="LOCAL-00012" summary="drop">
-      <option name="closed" value="true" />
-      <created>1721226712652</created>
-      <option name="number" value="00012" />
-      <option name="presentableId" value="LOCAL-00012" />
-      <option name="project" value="LOCAL" />
-      <updated>1721226712653</updated>
-    </task>
     <task id="LOCAL-00013" summary="drop">
       <option name="closed" value="true" />
       <created>1721228067822</created>
@@ -606,7 +598,15 @@
       <option name="project" value="LOCAL" />
       <updated>1731677311529</updated>
     </task>
-    <option name="localTasksCounter" value="61" />
+    <task id="LOCAL-00061" summary="fix sending no sheet">
+      <option name="closed" value="true" />
+      <created>1731930127694</created>
+      <option name="number" value="00061" />
+      <option name="presentableId" value="LOCAL-00061" />
+      <option name="project" value="LOCAL" />
+      <updated>1731930127694</updated>
+    </task>
+    <option name="localTasksCounter" value="62" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
