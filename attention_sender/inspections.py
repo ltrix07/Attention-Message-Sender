@@ -91,7 +91,7 @@ class Inspect:
             self.logger.warning(f"sheets: {sheets}")
             self.logger.warning(f"err_stat: {err_stat}")
             self.logger.warning(f"now_month: {now_month}; type: {type(now_month)}")
-            self.logger.warning("string month in sheets:", str(now_month) in sheets)
+            self.logger.warning(f"string month in sheets: {str(now_month) in sheets}")
             await self._generate_and_send_bad_mess(
                 ['analysts', 'developers'], chat_id, shop_name, message_no_sheet, 'Добавил лист',
                 'no_sheet'
