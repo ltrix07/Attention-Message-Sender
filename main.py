@@ -21,7 +21,7 @@ async def start_bot():
 async def retry_request(coro, retries=3, delay=2):
     for attempt in range(retries):
         try:
-            return await coro()
+            return coro()
         except (HttpError, TransportError, TimeoutError) as e:
             print(f"Ошибка запроса: {e}. Попытка {attempt + 1}/{retries}")
             if attempt < retries - 1:
