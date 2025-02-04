@@ -6,7 +6,7 @@ from attention_sender import TIME_TRIGGER
 from attention_sender.telegram_bot import delete_or_update_message, send_message_w_button, send_message
 from attention_sender.db import DataBase
 from attention_sender.errors import google_sheet_err_proc
-from typing import Callable
+from typing import Callable, Union, List, Optional
 from datetime import datetime
 
 
@@ -16,7 +16,7 @@ class Inspect:
         self.logger = logging.getLogger("INSPECT")
         self.staff = read_json(staff_data_ph)
 
-    async def _collect_workers(self, workers_type: list | str = 'all') -> str:
+    async def _collect_workers(self, workers_type: Optional[list] = 'all') -> str:
         workers_str = ""
         if workers_type == 'all':
             for workers in self.staff.keys():
@@ -38,7 +38,7 @@ class Inspect:
         await send_message(chat_id, message, shop, 'bad_price', order)
 
     async def _mes_sender_bs(
-            self, order: str, shop: str, sheet: str, chat_id: int, workers_type: list | str = 'all'
+            self, order: str, shop: str, sheet: str, chat_id: int, workers_type: Optional[list] = 'all'
     ):
         workers_str = await self._collect_workers(workers_type)
         message = message_bad_supplier(workers_str, shop, order, sheet)
@@ -55,8 +55,8 @@ class Inspect:
         await send_message(chat, message, shop, status_point, order)
 
     async def _generate_and_send_bad_mess(
-            self, workers_list: list | str, chat_id: int, shop_name: str, mess_func: Callable,
-            btn_txt: str, mes_type: str, sheet: str | None = None, **kwargs
+            self, workers_list: Union[list, str], chat_id: int, shop_name: str, mess_func: Callable,
+            btn_txt: str, mes_type: str, sheet: Optional[str] = None, **kwargs
     ):
         workers_str = await self._collect_workers(workers_list)
         if sheet:

@@ -18,7 +18,7 @@ async def sheet_look(
 ) -> None:
     table_id = table_inf.get('table_id')
     columns = table_inf.get('columns')
-    d_from_sheet: list | dict = google.get_all_info_from_sheet(table_id, worksheet)
+    d_from_sheet = google.get_all_info_from_sheet(table_id, worksheet)
     try:
         indices = google.get_columns_indices(d_from_sheet, columns)
         d_by_indices = await inspector.filter_data_by_indices(d_from_sheet, indices)

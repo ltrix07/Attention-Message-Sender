@@ -1,6 +1,7 @@
 import aiosqlite
 import os
 from aiogram.types import Message
+from typing import Optional, Union, List
 
 
 class DataBase:
@@ -91,7 +92,7 @@ class DataBase:
             print(f"Error occurred: {e}")
             return False
 
-    async def get_item(self, desired_col: str | list[str], **kwargs) -> str | int | tuple | None | bool:
+    async def get_item(self, desired_col: Union[str, List[str]], **kwargs) -> Union[str, int, tuple, None, bool]:
         keys = [key for key in kwargs.keys()]
         values = [value for value in kwargs.values()]
 

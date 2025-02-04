@@ -6,6 +6,7 @@ from attention_sender.utils import read_json
 from attention_sender.db import DataBase
 from aiogram import Bot, Dispatcher, types, exceptions
 from aiogram.types import InlineKeyboardButton, InlineKeyboardMarkup
+from typing import Union
 
 
 token = read_json('./creds/telegram.json').get('token')
@@ -32,7 +33,7 @@ async def do_bot_action_w_except(method_name: str, retries: int = 10, **kwargs):
                 raise err
 
 
-async def delete_or_update_message(chat_id: int, message_id: int, message_date: str | datetime) -> None:
+async def delete_or_update_message(chat_id: int, message_id: int, message_date: Union[str, datetime]) -> None:
     if isinstance(message_date, datetime):
         pass
     else:
@@ -65,7 +66,7 @@ async def callback_button_delete(callback_query: types.CallbackQuery):
 
 
 async def send_message_w_button(
-        chat_id: int, message: str, button_text: str, shop_name: str, mes_type: str, order: str | None
+        chat_id: int, message: str, button_text: str, shop_name: str, mes_type: str, order: Union[str, None]
 ) -> None:
     async with DataBase() as db:
         if not await db.check_values_in_columns(shop_name=shop_name, message_type=mes_type):

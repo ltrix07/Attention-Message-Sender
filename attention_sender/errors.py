@@ -1,4 +1,7 @@
-async def google_sheet_err_proc(g_proc_res: list | dict) -> str | None:
+from typing import Union
+
+
+async def google_sheet_err_proc(g_proc_res: Union[list, dict]) -> Union[str, None]:
     if isinstance(g_proc_res, dict):
         if g_proc_res['status'] == 'error' and g_proc_res.get('errors'):
             for error in g_proc_res.get('errors'):
