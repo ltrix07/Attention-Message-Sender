@@ -5,6 +5,9 @@ from attention_sender.collector import Collector
 from attention_sender.telegram_bot import dp, Bot
 from attention_sender.utils import read_json
 from attention_sender.inspections import Inspect
+import sys
+
+sys.stdout.reconfigure(encoding='utf-8')
 
 
 async def start_bot():
@@ -90,9 +93,16 @@ async def main(
 
 
 if __name__ == '__main__':
-    asyncio.run(main(
-        './db/staff.json',
-        './db/spreadsheets.json',
-        './db/chat_data.json',
-        './creds/google_creds.json'
-    ))
+    loop = asyncio.new_event_loop()
+    asyncio.set_event_loop(loop)
+    try:
+        loop.run_until_complete(main(
+            './db/staff.json',
+            './db/spreadsheets.json',
+            './db/chat_data.json',
+            './creds/google_creds.json'
+        ))
+    finally:
+        loop.run_until_complete(loop.shutdown_asyncgens())
+        loop.close()
+
