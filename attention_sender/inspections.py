@@ -100,7 +100,7 @@ class Inspect:
         return True
 
     @staticmethod
-    async def filter_data_by_indices(data: list, indices: dict) -> dict:
+    def filter_data_by_indices(data: list, indices: dict) -> dict:
         res = {}
         for row in data[1:]:
             for col, i in indices.items():

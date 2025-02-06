@@ -40,7 +40,7 @@ async def sheet_look(inspector: Inspect, google: GoogleSheets, table_inf, worksh
     d_from_sheet = await retry_request(lambda: google.get_all_info_from_sheet(table_id, worksheet))
     try:
         indices = google.get_columns_indices(d_from_sheet, columns)
-        d_by_indices = await inspector.filter_data_by_indices(d_from_sheet, indices)
+        d_by_indices = inspector.filter_data_by_indices(d_from_sheet, indices)
     except (KeyError, IndexError):
         return
     await inspector.check_problems(d_by_indices, ch_problem, shop_name, worksheet)
