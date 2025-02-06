@@ -4,9 +4,7 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="6c6bbe42-0a42-435c-808c-fd6466617e61" name="Changes" comment="fix error with bad connection to GoogleSheet">
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-    </list>
+    <list default="true" id="6c6bbe42-0a42-435c-808c-fd6466617e61" name="Changes" comment="fix error with bad connection to GoogleSheet" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -212,14 +210,6 @@
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
       <updated>1720801568065</updated>
-    </task>
-    <task id="LOCAL-00019" summary="add bad supplier check">
-      <option name="closed" value="true" />
-      <created>1721330200136</created>
-      <option name="number" value="00019" />
-      <option name="presentableId" value="LOCAL-00019" />
-      <option name="project" value="LOCAL" />
-      <updated>1721330200136</updated>
     </task>
     <task id="LOCAL-00020" summary="add bad supplier check">
       <option name="closed" value="true" />
@@ -605,7 +595,15 @@
       <option name="project" value="LOCAL" />
       <updated>1738704101738</updated>
     </task>
-    <option name="localTasksCounter" value="68" />
+    <task id="LOCAL-00068" summary="fix error with bad connection to GoogleSheet">
+      <option name="closed" value="true" />
+      <created>1738704896469</created>
+      <option name="number" value="00068" />
+      <option name="presentableId" value="LOCAL-00068" />
+      <option name="project" value="LOCAL" />
+      <updated>1738704896469</updated>
+    </task>
+    <option name="localTasksCounter" value="69" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
