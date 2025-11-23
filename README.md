@@ -1,128 +1,343 @@
 # Attention Message Sender
-## Описание
-Скрипт используется в качестве ассистента для контроля информации, которая отображается по ордерам в таблице продаж.
-Скрипт использует Google API для получения доступа к Google Sheets, а так же Telegram API для отправки информации 
-в рабочие чаты.
 
-## Установка
-1. `git clone https://github.com/ltrix07/Attention-Message-Sender.git`
-2. `python3 -m venv venv`
-3. `source venv/bin/activate`
-4. `pip3 install -r requirements.txt`
-5. Создать директорию `creds`:
-   1. Создать файл `google_creds.json`. В нем должен хранится ключ от сервисной почты Google.
-   2. Создать файл `telegram.json`. В нем должен хранится токен бота, который будет слать сообщения. Формат такой:  
+Python service that monitors orders in Google Sheets and sends automated alerts to Telegram when something goes wrong (bad prices, forbidden items, missing sheets, “No stock” spikes, etc.).
+
+It is built for e‑commerce teams that manage orders in Google Sheets and use Telegram for daily communication.
+
+---
+
+## Features
+
+- 🔗 **Google Sheets + Telegram integration**
+  - Reads order data from one or more Google Sheets.
+  - Sends alerts to dedicated Telegram chats.
+
+- 🧠 **Business rules / inspections**
+  - **Bad price** – too large negative profit.
+  - **Forbidden item / supplier** marked as `ЗАПРЕЩЕНКА!`.
+  - **Missing current month sheet**.
+  - **No access** to Google Sheet (forbidden).
+  - **Too many empty fee values**.
+  - **Scraper not pulling prices** (`buy_price` is empty but supplier exists).
+  - **Suppliers not collected** (empty `supplier_link`).
+  - **Checker issues** – too many `No stock` for today’s orders.
+  - **Attention statuses** from sheet:
+    - `Срочно проблема`
+    - `Срочно треб.закуп`
+    - `Треб.закуп новый поставщик`
+
+- 💬 **Smart Telegram messages**
+  - Mentions responsible staff (analysts, buyers, developers, managers).
+  - Each message is stored in SQLite so it is not duplicated.
+  - When a problem is fixed, the message is deleted or updated in chat and removed from DB.
+
+- 🛠️ **Admin CLI for shops**
+  - Manage shops and their sheet configuration via `shop_cli`:
+    - add / show / list / remove shops.
+
+- ⚙️ **Modular, async architecture**
+  - Clear separation: Google client, inspections, Telegram bot, DB layer, CLI, config.
+  - Asynchronous processing loop, non‑blocking Telegram bot.
+
+---
+
+## Project structure
+
+```text
+.
+├─ main.py                     # Entry point: runs bot + processing loop
+├─ attention_sender/
+│  ├─ __init__.py              # Exports core constants
+│  ├─ config.py                # Centralized paths & settings
+│  ├─ constants.py             # Time thresholds, business thresholds, status strings
+│  ├─ collector.py             # Helper for current/previous month
+│  ├─ db.py                    # Async wrapper around SQLite (sent_messages)
+│  ├─ errors.py                # Google Sheets error classification
+│  ├─ google_client.py         # Google Sheets client (gspread)
+│  ├─ inspections.py           # Main rules engine (all checks)
+│  ├─ telegram_bot.py          # Telegram bot, messaging helpers, callbacks
+│  ├─ utils.py                 # JSON helpers, date helper, message builders
+│  └─ shop_cli.py              # CLI for managing shops (spreadsheets.json)
+├─ creds/
+│  ├─ telegram.json            # Telegram bot token
+│  └─ google_creds.json        # Google service account credentials
+├─ db/
+│  ├─ staff.json               # Staff roles and usernames
+│  ├─ spreadsheets.json        # Shops configuration (sheets + columns mapping)
+│  └─ chat_data.json           # Telegram chat IDs for problems/attentions
+└─ cech/
+   └─ messages.db              # SQLite database with sent messages
+```
+
+---
+
+## Requirements
+
+- Python **3.10+**
+- Google service account with access to the required spreadsheets
+- Telegram bot token (from [BotFather](https://t.me/BotFather))
+
+Python dependencies (typical `requirements.txt`):
+
+```txt
+aiogram
+aiosqlite
+gspread
+google-auth
+google-auth-oauthlib
+google-auth-httplib2
+```
+
+---
+
+## Installation
+
+Clone the repository and create a virtual environment:
+
+```bash
+git clone https://github.com/<your-username>/Attention-Message-Sender.git
+cd Attention-Message-Sender
+
+python -m venv .venv
+source .venv/bin/activate   # on Linux / macOS
+# .venv\Scripts\activate  # on Windows
+```
+
+Install dependencies:
+
+```bash
+pip install -r requirements.txt
+```
+
+---
+
+## Configuration
+
+All important paths are defined in `attention_sender/config.py` via the `Settings` / `Paths` dataclasses.  
+By default the project expects the following files and folders.
+
+### 1. `creds/telegram.json`
+
 ```json
 {
-  "token": "<token>"
+  "token": "YOUR_TELEGRAM_BOT_TOKEN"
 }
 ```
-6. Создать директорию `db`:
-   1. Создать файл `chat_data.json`. В нем должны хранится id тех чатов, в которые будет отправляться сообщение того или
-иного типа.
-   2. Создать файл `spreadsheets.json`. В него будет сохранятся вся ифнормация после добавление таблицы через файл [maneger.py](maneger.py)
-   3. Создать файл `staff.json`. В нем должны хранится никнеймы работников в телеграм.  
-7. `python3 maneger.py`. Добавить данные про таблицы (будут просматриваться циклом).  
-8. `python3 main.py`  
 
-Вид файла `chat_data.json`:
+You can obtain a token from [BotFather](https://t.me/BotFather).
+
+---
+
+### 2. `creds/google_creds.json`
+
+Standard Google service account JSON, e.g. downloaded from Google Cloud Console:
+
 ```json
 {
-  "chat_w_problems": "id чата, в который будут отправляться сообщения с ошибкой",
-  "chat_w_attentions": "id чата, в который будут отправляться сообщения, на которые надо обратить внимание"
+  "type": "service_account",
+  "project_id": "...",
+  "private_key_id": "...",
+  "private_key": "-----BEGIN PRIVATE KEY-----\n...\n-----END PRIVATE KEY-----\n",
+  "client_email": "your-service-account@project.iam.gserviceaccount.com",
+  "client_id": "...",
+  "token_uri": "https://oauth2.googleapis.com/token",
+  "...": "..."
 }
 ```
 
-Вид файла `spreadsheets.json` (будет заполняться полуавтоматически):
+The `client_email` from this file must have at least **read access** to each Google Sheet you monitor.
+
+---
+
+### 3. `db/staff.json`
+
+Staff usernames grouped by roles. These roles are used when building messages and mentions:
+
 ```json
 {
-  "test": {
-    "table_id": "<table_id>",
+  "analysts":   ["@analyst1", "@analyst2"],
+  "buyers":     ["@buyer1"],
+  "developers": ["@dev1"],
+  "managers":   ["@manager1"]
+}
+```
+
+You can freely change the usernames; role names are referenced from `inspections.py`.
+
+---
+
+### 4. `db/chat_data.json`
+
+Telegram chat IDs where notifications will be sent:
+
+```json
+{
+  "chat_w_problems": -1001234567890,
+  "chat_w_attentions": -1009876543210
+}
+```
+
+- `chat_w_problems` – bad prices, forbidden, technical issues, checker problems, etc.
+- `chat_w_attentions` – attention statuses from Google Sheets (`Срочно проблема`, etc.).
+
+You can use the same chat ID for both if you wish.
+
+---
+
+### 5. `db/spreadsheets.json`
+
+Shops and their Google Sheet configuration.
+
+Example with a single shop:
+
+```json
+{
+  "shop1": {
+    "table_id": "1AbCdEfGhIjKlMnOpQrStUvWxYz1234567890",   // Google Sheets document ID
     "columns": {
       "status1": "Status 1",
-      "purchase_date": "Date of purchase",
-      "profit_amount": "Profit with gift",
-      "perc_profit": "Profit (%)",
-      "perc_w_gift": "Profit with gift %",
-      "order_num": "Order ID Amazon",
+      "status2": "Status 2",
+      "order_num": "Order ID",
+      "purchase_date": "Purchase date",
+      "profit_amount": "Profit amount",
+      "perc_w_gift": "Profit % (with gift)",
+      "fee": "Fee",
+      "supplier_link": "Supplier link",
+      "comment_field": "Comment",
       "buy_price": "Buy price"
     }
   }
 }
 ```
 
-Вид файла `staff.json`:
-```json
-{
-  "analysts": ["@worker1", "@worker2"],
-  "buyers": ["@worker1", "@worker2"],
-  "developers": ["@worker1", "@worker2"],
-  "trackers": ["@worker1", "@worker2"]
-}
+Keys under `columns` are logical names used in the code; values are **exact header texts** from the first row of your Google Sheet.
+
+You can manage this file more easily via the CLI (`shop_cli.py`), see below.
+
+---
+
+## Using the shop CLI
+
+To manage shops configuration from the command line:
+
+```bash
+python -m attention_sender.shop_cli list
+python -m attention_sender.shop_cli add
+python -m attention_sender.shop_cli show shop1
+python -m attention_sender.shop_cli remove shop1
 ```
 
+- `list` – shows all configured shops.
+- `add` – interactive wizard that asks for Google Sheet ID and column headers.
+- `show` – prints full configuration for a given shop.
+- `remove` – deletes a shop from `spreadsheets.json`.
 
-## Алгоритм
-Бот использует следующий алгоритм действий:
-1. Определяет все нужные ему для работы директории внутри проекта. За это отвечает функция [main()](https://github.com/ltrix07/Attention-Message-Sender/blob/0db497da31a28a04e1d15c4ece5224c244f05794/main.py#L75).
-2. Читает файлы, в которых записана информация про чаты и таблицы. Функция [process()](https://github.com/ltrix07/Attention-Message-Sender/blob/0db497da31a28a04e1d15c4ece5224c244f05794/main.py#L57).  
-Чтение происходит из двух файлов - `creds/telegram.json` (чаты телеграм, в которые надо отправлять сообщения) и `db/spreadsheets.json`
-   (информация про таблицы, с которых надо получать информацию).
-3. Просмотр таблицы целиком обозначение какие листы есть, каких нет. За это отвечает функция [look_table()](https://github.com/ltrix07/Attention-Message-Sender/blob/0db497da31a28a04e1d15c4ece5224c244f05794/main.py#L29).
-Если нет листа с текущим месяцем, бот отправит [сообщение](https://github.com/ltrix07/Attention-Message-Sender/blob/840f787bd82c2fbfc3b26b448a745532535a1c8c/README.md#L86).
-_Следовательно, стоит называть листы номерами месяцев_.
-4. Бот приступает к обработке каждого интересующего листа (текущий месяц, прошлый месяц, азат текущий м., азат прошлый м.  
-5. бро текущий м., бро прошлый м.). За эту обработку отвечает функция [sheet_look()](https://github.com/ltrix07/Attention-Message-Sender/blob/0db497da31a28a04e1d15c4ece5224c244f05794/main.py#L16).  
-6. Собирается вся информация с листа при помощи метода [get_all_info_from_sheet()](https://github.com/ltrix07/Attention-Message-Sender/blob/0db497da31a28a04e1d15c4ece5224c244f05794/main.py#L22).  
-7. Определяются индексы тех столбцов, информация с которых нам нужна. При помощи метода [get_columns_indices()](https://github.com/ltrix07/Attention-Message-Sender/blob/0db497da31a28a04e1d15c4ece5224c244f05794/main.py#L23).  
-8. Общие полученные данные фильтруются относительно индексов. При помощи метода [filter_data_by_indices()](https://github.com/ltrix07/Attention-Message-Sender/blob/0db497da31a28a04e1d15c4ece5224c244f05794/attention_sender/inspections.py#L22).  
+---
 
+## How it works
 
-## Виды сообщений
-### NoWorksheetInTable
-Отправляется ботом в том случае если он не может найти лист названый **текущим** месяцем.
-```text
-@worker1, worker2
-В таблице "10" нет листа с текущим месяцем.
+1. **Telegram bot**  
+   `attention_sender/telegram_bot.py` creates a bot using `aiogram` and exposes:
+   - polling dispatcher (`dp`);
+   - helper functions for sending messages with/without buttons;
+   - callback handler for “resolved” buttons;
+   - logic for deleting or updating old messages.
+
+2. **Google Sheets client**  
+   `attention_sender/google_client.py` uses `gspread` to:
+   - list sheet titles for a given spreadsheet (`get_sheets_name`);
+   - read all values from a worksheet (`get_all_info_from_sheet`);
+   - map logical column keys to indices based on header row (`get_columns_indices`).
+
+3. **Inspections / rules**  
+   `attention_sender/inspections.py` is the central rules engine.  
+   It receives filtered table data and runs a series of checks, e.g.:
+
+   - **Bad price (`bad_price`)**
+     - Profit percentage ≤ configured threshold (default `-7%`);
+     - Status 1 is empty or `"Треб.закуп преп"`;
+     - Status 2 is empty.
+     - Sends a message and remembers it in DB.  
+       If later profit is fixed or status changes, the message is removed.
+
+   - **Forbidden supplier / item (`bad_supplier`)**
+     - `comment_field` contains `ЗАПРЕЩЕНКА!`.
+     - Status 1 is empty.
+     - When marker disappears or status changes, message is removed.
+
+   - **Missing sheet / access**
+     - If there is no sheet for current month → send `no_sheet`.
+     - If Google API response indicates forbidden access → send `no_access`.
+
+   - **Fee, scraper, suppliers, checker**
+     - Too many rows with `fee = "-"`.
+     - Too many orders today with empty `buy_price` but non‑empty supplier.
+     - Too many orders today with empty `supplier_link`.
+     - Too many `No stock` among today’s orders (checker problem).
+
+   - **Attention statuses**
+     - Look at `status1` and `status2` columns:
+       - `Срочно проблема` → ping `analysts`.
+       - `Срочно треб.закуп` → ping `buyers`.
+       - `Треб.закуп новый поставщик` → ping `buyers`.  
+     - If the status changes or the order becomes `"закуплен"`, the old message is removed.
+
+4. **Database layer**  
+   `attention_sender/db.py` wraps `aiosqlite` and stores messages in a `sent_messages` table:
+   - `message_id`, `chat_id`, `shop_name`, `message_type`, `order_id`, `text`, `date`.
+   - Used to avoid duplicates and to delete/update messages when needed.
+
+5. **Main loop**  
+   `main.py` runs:
+   - Telegram bot polling;
+   - Async processing loop that:
+     - iterates over all shops in `db/spreadsheets.json`;
+     - for each shop, detects current/previous month sheets;
+     - loads and filters table data via `GoogleSheetsClient`;
+     - runs all inspections.
+
+---
+
+## Running the service
+
+After you have:
+
+- created virtual environment,
+- installed dependencies,
+- filled `creds/`, `db/` JSON files,
+
+you can start the service with:
+
+```bash
+python main.py
 ```
-Под сообщением будет кнопка `Я добавил лист`. После того как работник создал лист и в названии указал текущий месяц он должен
-нажать эту кнопку. Это даст боту понять что человек исправил ошибку и в случае если он встретит ее снова, то нужно опять отправить
-информацию в чат.  
 
-### BadPrice
-Отправляется в том случае если цена `perc_w_gift` (прибыль с гифтой в %) менее меньше -7%.
-```text
-❗️Warning: Слишком большой минус.
-Amazon order: 111-1111-1111-111
-Profit ($): -10$
-Profit (%): -8%
-Shop: "Test"
-Sheet name: "7"
-```
-В случае если цену исправят и прибыль с гифтой станет более -7%, бот удалит сообщение из группы и из своей БД.
+What happens:
 
-### AttentionMessage
-Отправляется когда кто-то ставит в таблице триггерный статус.
-```text
-{workers}
-❗️{status}
+- The Telegram bot starts polling.
+- The processing loop runs continuous cycles over all configured shops.
+- When rules are triggered, messages appear in your Telegram chats.
 
-{order}
+You can stop the service with `Ctrl + C`.
 
-📅{buy_date}
-👨‍💻{worker_type}
-🏪{shop_name}
-📁{sheet_name}
-```
-* _workers_ - отметит тех сотрудников, которым адресовано сообщение.
-* _status_ - триггерный статус.
-* _order_ - номер ордера амазон.
-* _buy_date_ - дата заказа товара.
-* _worker_type_ - тип (специализация) сотрудника, которому адресовано сообщение.
-* _shop_name_ - название магазина, которому относится это сообщение.
-* _sheet_name_ - название листа, которому относится это сообщение.
-#### Триггерные статусы
-* **Срочно проблема** - относиться к `analysts`.
-* **Срочно треб.закуп** - относится к `buyers`.
-* **Треб.закуп новый поставщик** - относится к `buyers`.
-* **Отмена** - относится к `trackers`.
+---
+
+## Development notes
+
+- The project uses an **async** architecture:
+  - `aiogram` for Telegram bot;
+  - `aiosqlite` for DB access;
+  - `asyncio` for running bot and processing loop in parallel.
+- Business rules, thresholds and status strings are defined in
+  `attention_sender/constants.py` and can be adjusted for your team.
+- All comments and docstrings inside the code are in English,
+  while user‑visible messages remain in Russian (to match existing workflows).
+
+---
+
+## TODO / ideas
+
+- Docker image for easy deployment.
+- Simple web dashboard for monitoring last alerts.
+- More granular configuration per shop (different thresholds, chat IDs, etc.).
+- Tests for core inspection logic.

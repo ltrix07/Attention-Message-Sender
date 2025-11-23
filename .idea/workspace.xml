@@ -4,12 +4,8 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="6c6bbe42-0a42-435c-808c-fd6466617e61" name="Changes" comment="telegram_bot.py update: refactoring">
+    <list default="true" id="6c6bbe42-0a42-435c-808c-fd6466617e61" name="Changes" comment="main.py update: refactoring">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/attention_sender/utils/__init__.py" beforeDir="false" afterPath="$PROJECT_DIR$/attention_sender/utils.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/attention_sender/utils/dates.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/attention_sender/utils/json_io.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/attention_sender/utils/messages.py" beforeDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -216,38 +212,6 @@
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
       <updated>1720801568065</updated>
-    </task>
-    <task id="LOCAL-00033" summary="async db">
-      <option name="closed" value="true" />
-      <created>1722364519840</created>
-      <option name="number" value="00033" />
-      <option name="presentableId" value="LOCAL-00033" />
-      <option name="project" value="LOCAL" />
-      <updated>1722364519840</updated>
-    </task>
-    <task id="LOCAL-00034" summary="async db">
-      <option name="closed" value="true" />
-      <created>1722366870937</created>
-      <option name="number" value="00034" />
-      <option name="presentableId" value="LOCAL-00034" />
-      <option name="project" value="LOCAL" />
-      <updated>1722366870937</updated>
-    </task>
-    <task id="LOCAL-00035" summary="all_fee_num must be &gt; 9 for send message">
-      <option name="closed" value="true" />
-      <created>1722497479922</created>
-      <option name="number" value="00035" />
-      <option name="presentableId" value="LOCAL-00035" />
-      <option name="project" value="LOCAL" />
-      <updated>1722497479922</updated>
-    </task>
-    <task id="LOCAL-00036" summary="add inspect_checker">
-      <option name="closed" value="true" />
-      <created>1723210172503</created>
-      <option name="number" value="00036" />
-      <option name="presentableId" value="LOCAL-00036" />
-      <option name="project" value="LOCAL" />
-      <updated>1723210172503</updated>
     </task>
     <task id="LOCAL-00037" summary="add inspect_checker">
       <option name="closed" value="true" />
@@ -609,7 +573,39 @@
       <option name="project" value="LOCAL" />
       <updated>1763913402523</updated>
     </task>
-    <option name="localTasksCounter" value="82" />
+    <task id="LOCAL-00082" summary="utils.py update: refactoring">
+      <option name="closed" value="true" />
+      <created>1763913588435</created>
+      <option name="number" value="00082" />
+      <option name="presentableId" value="LOCAL-00082" />
+      <option name="project" value="LOCAL" />
+      <updated>1763913588435</updated>
+    </task>
+    <task id="LOCAL-00083" summary="constants.py update: refactoring">
+      <option name="closed" value="true" />
+      <created>1763913605198</created>
+      <option name="number" value="00083" />
+      <option name="presentableId" value="LOCAL-00083" />
+      <option name="project" value="LOCAL" />
+      <updated>1763913605198</updated>
+    </task>
+    <task id="LOCAL-00084" summary="errors.py; shops_cli.py update: refactoring">
+      <option name="closed" value="true" />
+      <created>1763913855422</created>
+      <option name="number" value="00084" />
+      <option name="presentableId" value="LOCAL-00084" />
+      <option name="project" value="LOCAL" />
+      <updated>1763913855422</updated>
+    </task>
+    <task id="LOCAL-00085" summary="main.py update: refactoring">
+      <option name="closed" value="true" />
+      <created>1763914096506</created>
+      <option name="number" value="00085" />
+      <option name="presentableId" value="LOCAL-00085" />
+      <option name="project" value="LOCAL" />
+      <updated>1763914096506</updated>
+    </task>
+    <option name="localTasksCounter" value="86" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -642,10 +638,13 @@
     <MESSAGE value="main update: change logic" />
     <MESSAGE value="db update: refactoring" />
     <MESSAGE value="google_client.py update: refactoring" />
-    <MESSAGE value="constants.py update: refactoring" />
     <MESSAGE value="collector.py update: refactoring" />
     <MESSAGE value="inspections.py update: refactoring" />
     <MESSAGE value="telegram_bot.py update: refactoring" />
-    <option name="LAST_COMMIT_MESSAGE" value="telegram_bot.py update: refactoring" />
+    <MESSAGE value="utils.py update: refactoring" />
+    <MESSAGE value="constants.py update: refactoring" />
+    <MESSAGE value="errors.py; shops_cli.py update: refactoring" />
+    <MESSAGE value="main.py update: refactoring" />
+    <option name="LAST_COMMIT_MESSAGE" value="main.py update: refactoring" />
   </component>
 </project>
