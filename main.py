@@ -1,110 +1,127 @@
-# main.py
 import asyncio
-import time
+import logging
 import sys
-from typing import Callable, Awaitable
-
-from google_sheets_utils.buid import GoogleSheets
-from googleapiclient.errors import HttpError
-from google.auth.exceptions import TransportError
+import time
+from typing import Any, Dict
 
 from attention_sender.collector import Collector
-from attention_sender.telegram_bot import dp, Bot
+from attention_sender.telegram_bot import bot, dp
 from attention_sender.utils import read_json
 from attention_sender.inspections import Inspect
 from attention_sender.config import settings
+from attention_sender.google_client import GoogleSheetsClient
 
 sys.stdout.reconfigure(encoding="utf-8")
 
 
 async def start_bot() -> None:
     """
-    Starts Telegram bot polling using token from credentials.
+    Start Telegram bot polling.
+
+    Bot instance and dispatcher are created in attention_sender.telegram_bot.
     """
-    token = read_json(settings.paths.telegram_creds.as_posix()).get("token")
-    bot = Bot(token)
     await dp.start_polling(bot)
 
 
-async def retry_request(
-    func: Callable[[], Awaitable],
-    retries: int = 3,
-    delay: int = 2,
-):
+async def run_blocking(func, *args, **kwargs):
     """
-    Wrapper for retrying async Google API calls with exponential backoff.
+    Run a blocking function in a separate thread, returning its result.
+
+    This is used to call Google Sheets API methods from async code without
+    blocking the event loop.
     """
-    for attempt in range(retries):
-        try:
-            result = func()
-            if asyncio.iscoroutine(result):
-                return await result
-            return result
-        except (HttpError, TransportError, TimeoutError) as e:
-            print(f"Ошибка запроса: {e}. Попытка {attempt + 1}/{retries}")
-            if attempt < retries - 1:
-                await asyncio.sleep(delay * (2**attempt))
-            else:
-                raise
+    loop = asyncio.get_running_loop()
+    return await loop.run_in_executor(None, lambda: func(*args, **kwargs))
 
 
 async def sheet_look(
     inspector: Inspect,
-    google: GoogleSheets,
-    table_inf: dict,
+    google: GoogleSheetsClient,
+    table_conf: Dict[str, Any],
     worksheet: str,
-    ch_problem: int,
-    ch_attention: int,
+    chat_problems: int,
+    chat_attentions: int,
     shop_name: str,
 ) -> None:
     """
-    Fetches sheet data, filters columns and runs inspections/attentions.
-    """
-    table_id = table_inf.get("table_id")
-    columns = table_inf.get("columns")
+    Fetch data for a single worksheet and run all inspections on it.
 
-    d_from_sheet = await retry_request(
-        lambda: google.get_all_info_from_sheet(table_id, worksheet)
+    :param inspector: Inspect instance with business rules
+    :param google: GoogleSheetsClient instance
+    :param table_conf: configuration for the shop (table_id, columns mapping)
+    :param worksheet: worksheet (tab) name to read
+    :param chat_problems: Telegram chat id for problem notifications
+    :param chat_attentions: Telegram chat id for attention notifications
+    :param shop_name: shop name (used in messages and DB)
+    """
+    table_id = table_conf.get("table_id")
+    columns_cfg = table_conf.get("columns", {})
+
+    # Fetch all rows from sheet
+    raw_data = await run_blocking(
+        google.get_all_info_from_sheet, table_id, worksheet
     )
     try:
-        indices = google.get_columns_indices(d_from_sheet, columns)
-        d_by_indices = inspector.filter_data_by_indices(d_from_sheet, indices)
-    except (KeyError, IndexError):
+        indices = google.get_columns_indices(raw_data, columns_cfg)
+        filtered_data = inspector.filter_data_by_indices(raw_data, indices)
+    except (KeyError, IndexError) as exc:
+        # Misconfigured columns or malformed sheet header
+        logging.warning(
+            "Failed to map columns for shop '%s' sheet '%s': %s",
+            shop_name,
+            worksheet,
+            exc,
+        )
         return
 
-    await inspector.check_problems(d_by_indices, ch_problem, shop_name, worksheet)
-    await inspector.check_attentions(d_by_indices, ch_attention, shop_name, worksheet)
+    # Run problem checks and attention checks
+    await inspector.check_problems(filtered_data, chat_problems, shop_name, worksheet)
+    await inspector.check_attentions(filtered_data, chat_attentions, shop_name, worksheet)
 
 
 async def look_table(
     g_creds_ph: str,
-    chat_data: dict,
+    chat_data: Dict[str, Any],
     shop_name: str,
-    table_inf: dict,
+    table_conf: Dict[str, Any],
     staff_ph: str,
 ) -> None:
+    """
+    Process all relevant sheets for a single shop.
+
+    It:
+      - builds GoogleSheetsClient and Inspect instances,
+      - reads list of worksheet titles,
+      - checks if current month sheet exists (and access is ok),
+      - runs inspections for current/previous-month-related sheets.
+    """
     shop_name_cap = shop_name.capitalize()
     collector = Collector()
-    g_api = GoogleSheets(g_creds_ph)
+    google = GoogleSheetsClient(g_creds_ph)
     inspector = Inspect(staff_ph)
 
-    table_id = table_inf.get("table_id")
-    sheets = await retry_request(lambda: g_api.get_sheets_name(table_id))
+    table_id = table_conf.get("table_id")
+    sheets = await run_blocking(google.get_sheets_name, table_id)
 
     now_m, prev_m = await collector.define_months()
-    chat_problems = chat_data.get("chat_w_problems")
-    chat_attention = chat_data.get("chat_w_attentions")
 
+    chat_problems = chat_data.get("chat_w_problems")
+    chat_attentions = chat_data.get("chat_w_attentions")
+
+    # Check that we have access and current month sheet
     has_current_month = await inspector.now_m_in_sheet(
-        shop_name_cap, chat_problems, sheets, now_m
+        shop_name_cap,
+        chat_problems,
+        sheets,
+        now_m,
     )
     if not has_current_month:
         return
 
-    # порядок листов: текущий, предыдущий и спец-префиксы
+    # Candidate sheets to inspect (order matters)
     candidate_sheets = [
-        now_m,
-        prev_m,
+        str(now_m),
+        str(prev_m),
         f"azat_{now_m}",
         f"azat_{prev_m}",
         f"bro_{now_m}",
@@ -112,22 +129,26 @@ async def look_table(
     ]
 
     for sheet in candidate_sheets:
-        if str(sheet) in sheets:
+        if sheet in sheets:
             await sheet_look(
-                inspector,
-                g_api,
-                table_inf,
-                worksheet=str(sheet),
-                ch_problem=chat_problems,
-                ch_attention=chat_attention,
+                inspector=inspector,
+                google=google,
+                table_conf=table_conf,
+                worksheet=sheet,
+                chat_problems=chat_problems,
+                chat_attentions=chat_attentions,
                 shop_name=shop_name_cap,
             )
+            # Stop after the first matching sheet
             break
 
 
 async def process_loop() -> None:
     """
-    Main loop: iterates over shops and processes their sheets in cycles.
+    Main processing loop.
+
+    Iterates over all shops from spreadsheets.json and runs inspections
+    in continuous cycles.
     """
     spreadsheets = read_json(settings.paths.spreadsheets.as_posix())
     chat_data = read_json(settings.paths.chat_data.as_posix())
@@ -136,33 +157,43 @@ async def process_loop() -> None:
 
     while True:
         start_t = time.time()
-        for shop_name, table_info in spreadsheets.items():
-            print(f"Обрабатываю: {shop_name}")
+        for shop_name, table_conf in spreadsheets.items():
+            logging.info("Processing shop: %s", shop_name)
             try:
-                await retry_request(
-                    lambda: look_table(
-                        g_creds_ph=g_creds_ph,
-                        chat_data=chat_data,
-                        shop_name=shop_name,
-                        table_inf=table_info,
-                        staff_ph=staff_ph,
-                    )
+                await look_table(
+                    g_creds_ph=g_creds_ph,
+                    chat_data=chat_data,
+                    shop_name=shop_name,
+                    table_conf=table_conf,
+                    staff_ph=staff_ph,
                 )
-            except Exception as e:
-                print(f"Ошибка при обработке {shop_name}: {e}")
+            except Exception as exc:
+                logging.exception("Error while processing shop '%s': %s", shop_name, exc)
+            # Small delay between shops to avoid hammering the API
             await asyncio.sleep(5)
-        print(f"Цикл занял {time.time() - start_t:.2f} секунд")
+
+        cycle_duration = time.time() - start_t
+        logging.info("Cycle finished in %.2f seconds", cycle_duration)
 
 
 async def main() -> None:
     """
-    Entry point: runs Telegram bot and processing loop in parallel.
+    Entry point for the application.
+
+    Runs Telegram bot polling and processing loop in parallel.
     """
-    print("Запуск бота и программы")
+    logging.info("Starting bot and processing loop")
     task_bot = asyncio.create_task(start_bot())
     task_process = asyncio.create_task(process_loop())
     await asyncio.gather(task_bot, task_process)
 
 
 if __name__ == "__main__":
-    asyncio.run(main())
+    logging.basicConfig(
+        level=logging.INFO,
+        format="%(asctime)s [%(levelname)s] %(name)s: %(message)s",
+    )
+    try:
+        asyncio.run(main())
+    except KeyboardInterrupt:
+        logging.info("Shutting down on KeyboardInterrupt")
