@@ -16,7 +16,7 @@ from attention_sender.utils import (
     message_bad_supplier,
     message_inspect_checker,
 )
-from attention_sender import TIME_TRIGGER
+from attention_sender.constants import TIME_TRIGGER
 from attention_sender.telegram_bot import (
     delete_or_update_message,
     send_message_w_button,
