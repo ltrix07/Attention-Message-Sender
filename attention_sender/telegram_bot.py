@@ -5,7 +5,7 @@ from typing import Union
 from aiogram import Bot as AiogramBot, Dispatcher, types, exceptions
 from aiogram.types import InlineKeyboardButton, InlineKeyboardMarkup
 
-from attention_sender import MESSAGE_LIFETIME
+from attention_sender.constants import MESSAGE_LIFETIME
 from attention_sender.utils import read_json
 from attention_sender.db import DataBase
 
