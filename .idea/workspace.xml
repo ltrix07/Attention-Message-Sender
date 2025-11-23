@@ -4,24 +4,12 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="6c6bbe42-0a42-435c-808c-fd6466617e61" name="Changes" comment="fix error with bad connection to GoogleSheet">
-      <change afterPath="$PROJECT_DIR$/attention_sender/config.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/attention_sender/constants.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/attention_sender/google_client.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/attention_sender/utils/__init__.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/attention_sender/utils/dates.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/attention_sender/utils/json_io.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/attention_sender/utils/messages.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/cli/__init__.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/cli/shops_cli.py" afterDir="false" />
+    <list default="true" id="6c6bbe42-0a42-435c-808c-fd6466617e61" name="Changes" comment="telegram_bot.py update: refactoring">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/attention_sender/__init__.py" beforeDir="false" afterPath="$PROJECT_DIR$/attention_sender/__init__.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/attention_sender/collector.py" beforeDir="false" afterPath="$PROJECT_DIR$/attention_sender/collector.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/attention_sender/db.py" beforeDir="false" afterPath="$PROJECT_DIR$/attention_sender/db.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/attention_sender/errors.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/attention_sender/inspections.py" beforeDir="false" afterPath="$PROJECT_DIR$/attention_sender/inspections.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/attention_sender/telegram_bot.py" beforeDir="false" afterPath="$PROJECT_DIR$/attention_sender/telegram_bot.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/attention_sender/utils.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/attention_sender/utils/__init__.py" beforeDir="false" afterPath="$PROJECT_DIR$/attention_sender/utils.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/attention_sender/utils/dates.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/attention_sender/utils/json_io.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/attention_sender/utils/messages.py" beforeDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -228,94 +216,6 @@
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
       <updated>1720801568065</updated>
-    </task>
-    <task id="LOCAL-00022" summary="add bad supplier check">
-      <option name="closed" value="true" />
-      <created>1721468669191</created>
-      <option name="number" value="00022" />
-      <option name="presentableId" value="LOCAL-00022" />
-      <option name="project" value="LOCAL" />
-      <updated>1721468669191</updated>
-    </task>
-    <task id="LOCAL-00023" summary="add bad supplier check">
-      <option name="closed" value="true" />
-      <created>1721468811835</created>
-      <option name="number" value="00023" />
-      <option name="presentableId" value="LOCAL-00023" />
-      <option name="project" value="LOCAL" />
-      <updated>1721468811835</updated>
-    </task>
-    <task id="LOCAL-00024" summary="add bad supplier check">
-      <option name="closed" value="true" />
-      <created>1721469658937</created>
-      <option name="number" value="00024" />
-      <option name="presentableId" value="LOCAL-00024" />
-      <option name="project" value="LOCAL" />
-      <updated>1721469658937</updated>
-    </task>
-    <task id="LOCAL-00025" summary="add bad supplier check">
-      <option name="closed" value="true" />
-      <created>1721474409836</created>
-      <option name="number" value="00025" />
-      <option name="presentableId" value="LOCAL-00025" />
-      <option name="project" value="LOCAL" />
-      <updated>1721474409836</updated>
-    </task>
-    <task id="LOCAL-00026" summary="add bad supplier check">
-      <option name="closed" value="true" />
-      <created>1721481227704</created>
-      <option name="number" value="00026" />
-      <option name="presentableId" value="LOCAL-00026" />
-      <option name="project" value="LOCAL" />
-      <updated>1721481227704</updated>
-    </task>
-    <task id="LOCAL-00027" summary="add bad supplier check">
-      <option name="closed" value="true" />
-      <created>1721481281576</created>
-      <option name="number" value="00027" />
-      <option name="presentableId" value="LOCAL-00027" />
-      <option name="project" value="LOCAL" />
-      <updated>1721481281576</updated>
-    </task>
-    <task id="LOCAL-00028" summary="add exceptions processing func">
-      <option name="closed" value="true" />
-      <created>1722002929290</created>
-      <option name="number" value="00028" />
-      <option name="presentableId" value="LOCAL-00028" />
-      <option name="project" value="LOCAL" />
-      <updated>1722002929290</updated>
-    </task>
-    <task id="LOCAL-00029" summary="async db">
-      <option name="closed" value="true" />
-      <created>1722363063329</created>
-      <option name="number" value="00029" />
-      <option name="presentableId" value="LOCAL-00029" />
-      <option name="project" value="LOCAL" />
-      <updated>1722363063329</updated>
-    </task>
-    <task id="LOCAL-00030" summary="async db">
-      <option name="closed" value="true" />
-      <created>1722363283808</created>
-      <option name="number" value="00030" />
-      <option name="presentableId" value="LOCAL-00030" />
-      <option name="project" value="LOCAL" />
-      <updated>1722363283808</updated>
-    </task>
-    <task id="LOCAL-00031" summary="async db">
-      <option name="closed" value="true" />
-      <created>1722363518857</created>
-      <option name="number" value="00031" />
-      <option name="presentableId" value="LOCAL-00031" />
-      <option name="project" value="LOCAL" />
-      <updated>1722363518857</updated>
-    </task>
-    <task id="LOCAL-00032" summary="async db">
-      <option name="closed" value="true" />
-      <created>1722363808240</created>
-      <option name="number" value="00032" />
-      <option name="presentableId" value="LOCAL-00032" />
-      <option name="project" value="LOCAL" />
-      <updated>1722363808240</updated>
     </task>
     <task id="LOCAL-00033" summary="async db">
       <option name="closed" value="true" />
@@ -621,7 +521,95 @@
       <option name="project" value="LOCAL" />
       <updated>1738832020923</updated>
     </task>
-    <option name="localTasksCounter" value="71" />
+    <task id="LOCAL-00071" summary="new structure">
+      <option name="closed" value="true" />
+      <created>1763910967212</created>
+      <option name="number" value="00071" />
+      <option name="presentableId" value="LOCAL-00071" />
+      <option name="project" value="LOCAL" />
+      <updated>1763910967212</updated>
+    </task>
+    <task id="LOCAL-00072" summary="main update: change logic">
+      <option name="closed" value="true" />
+      <created>1763911047385</created>
+      <option name="number" value="00072" />
+      <option name="presentableId" value="LOCAL-00072" />
+      <option name="project" value="LOCAL" />
+      <updated>1763911047385</updated>
+    </task>
+    <task id="LOCAL-00073" summary="db update: refactoring">
+      <option name="closed" value="true" />
+      <created>1763911525200</created>
+      <option name="number" value="00073" />
+      <option name="presentableId" value="LOCAL-00073" />
+      <option name="project" value="LOCAL" />
+      <updated>1763911525200</updated>
+    </task>
+    <task id="LOCAL-00074" summary="telegram_bot.py update: refactoring">
+      <option name="closed" value="true" />
+      <created>1763911579750</created>
+      <option name="number" value="00074" />
+      <option name="presentableId" value="LOCAL-00074" />
+      <option name="project" value="LOCAL" />
+      <updated>1763911579750</updated>
+    </task>
+    <task id="LOCAL-00075" summary="telegram_bot.py update: refactoring">
+      <option name="closed" value="true" />
+      <created>1763912041933</created>
+      <option name="number" value="00075" />
+      <option name="presentableId" value="LOCAL-00075" />
+      <option name="project" value="LOCAL" />
+      <updated>1763912041933</updated>
+    </task>
+    <task id="LOCAL-00076" summary="google_client.py update: refactoring">
+      <option name="closed" value="true" />
+      <created>1763912730919</created>
+      <option name="number" value="00076" />
+      <option name="presentableId" value="LOCAL-00076" />
+      <option name="project" value="LOCAL" />
+      <updated>1763912730919</updated>
+    </task>
+    <task id="LOCAL-00077" summary="inspections.py update: refactoring">
+      <option name="closed" value="true" />
+      <created>1763912750573</created>
+      <option name="number" value="00077" />
+      <option name="presentableId" value="LOCAL-00077" />
+      <option name="project" value="LOCAL" />
+      <updated>1763912750573</updated>
+    </task>
+    <task id="LOCAL-00078" summary="constants.py update: refactoring">
+      <option name="closed" value="true" />
+      <created>1763913273156</created>
+      <option name="number" value="00078" />
+      <option name="presentableId" value="LOCAL-00078" />
+      <option name="project" value="LOCAL" />
+      <updated>1763913273156</updated>
+    </task>
+    <task id="LOCAL-00079" summary="collector.py update: refactoring">
+      <option name="closed" value="true" />
+      <created>1763913378192</created>
+      <option name="number" value="00079" />
+      <option name="presentableId" value="LOCAL-00079" />
+      <option name="project" value="LOCAL" />
+      <updated>1763913378192</updated>
+    </task>
+    <task id="LOCAL-00080" summary="inspections.py update: refactoring">
+      <option name="closed" value="true" />
+      <created>1763913394773</created>
+      <option name="number" value="00080" />
+      <option name="presentableId" value="LOCAL-00080" />
+      <option name="project" value="LOCAL" />
+      <updated>1763913394773</updated>
+    </task>
+    <task id="LOCAL-00081" summary="telegram_bot.py update: refactoring">
+      <option name="closed" value="true" />
+      <created>1763913402523</created>
+      <option name="number" value="00081" />
+      <option name="presentableId" value="LOCAL-00081" />
+      <option name="project" value="LOCAL" />
+      <updated>1763913402523</updated>
+    </task>
+    <option name="localTasksCounter" value="82" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -650,6 +638,14 @@
     <MESSAGE value="fix sending no sheet" />
     <MESSAGE value="fix values error" />
     <MESSAGE value="fix error with bad connection to GoogleSheet" />
-    <option name="LAST_COMMIT_MESSAGE" value="fix error with bad connection to GoogleSheet" />
+    <MESSAGE value="new structure" />
+    <MESSAGE value="main update: change logic" />
+    <MESSAGE value="db update: refactoring" />
+    <MESSAGE value="google_client.py update: refactoring" />
+    <MESSAGE value="constants.py update: refactoring" />
+    <MESSAGE value="collector.py update: refactoring" />
+    <MESSAGE value="inspections.py update: refactoring" />
+    <MESSAGE value="telegram_bot.py update: refactoring" />
+    <option name="LAST_COMMIT_MESSAGE" value="telegram_bot.py update: refactoring" />
   </component>
 </project>

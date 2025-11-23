@@ -1,4 +1,3 @@
-# attention_sender/constants.py
 from datetime import time, timedelta
 from typing import Final
 
